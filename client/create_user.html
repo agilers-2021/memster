@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>New account</title>
+        <link rel="stylesheet" href="./index.css">
+    </head>
+    <body onload="createUserInit()">
+        <main>
+            <form id="create-user-form">
+                <p>
+                    <label for="login">Login</label>
+                    <input type="text" id="login"/>
+                </p>
+                <p>
+                    <label for="password">Password</label>
+                    <input type="password" id="password"/>
+                </p>
+                <p>
+                    <label for="repeat-password">Confirm password</label>
+                    <input type="password" id="repeat-password"/>
+                </p>
+                <p>
+                    <label for="meme-picture">Meme</label>
+                    <input type="file" accept="image/*" id="meme-picture"/>
+                </p>
+                <p>
+                    <label for="meme-text">Anecdote</label>
+                    <textarea id="meme-text" cols="50" rows="4"
+                              placeholder="- Knock knock!&#10;- Race Condition!&#10;- Who's there?"></textarea>
+                </p>
+                <p>
+                    <button type="submit" id="create-user-button">Create</button>
+                </p>
+            </form>
+        </main>
+
+        <script src="index.js"></script>
+    </body>
+</html>

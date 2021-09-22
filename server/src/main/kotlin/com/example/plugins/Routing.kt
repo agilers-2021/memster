@@ -1,16 +1,28 @@
 package com.example.plugins
 
-import io.ktor.routing.*
-import io.ktor.http.*
 import io.ktor.application.*
+import io.ktor.http.content.*
 import io.ktor.response.*
-import io.ktor.request.*
+import io.ktor.routing.*
 
 fun Application.configureRouting() {
 
   routing {
     get("/") {
-      call.respondText("Hi, I'm Memster!")
+      // TODO check auth
+      call.respondRedirect("/login")
+    }
+    static {
+      files("client")
+    }
+    static("/create_account") {
+      default("client/create_user.html")
+    }
+    static("/login") {
+      default("client/login.html")
+    }
+    static("/me") {
+      default("client/user_page.html")
     }
   }
 }
