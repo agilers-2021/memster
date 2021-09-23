@@ -1,20 +1,23 @@
 package com.example
 
-import io.ktor.routing.*
+import io.ktor.config.*
 import io.ktor.http.*
-import io.ktor.auth.*
-import io.ktor.util.*
-import io.ktor.application.*
-import io.ktor.response.*
-import io.ktor.request.*
-import kotlin.test.*
 import io.ktor.server.testing.*
-import com.example.plugins.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class ApplicationTest {
   @Test
   fun testRoot() {
-    withTestApplication({ configureRouting() }) {
+    withTestApplication({
+      (environment.config as MapApplicationConfig).apply {
+        put("jwt.secret", "secret")
+        put("jwt.issuer", "http://0.0.0.0:8080/")
+        put("jwt.audience", "http://0.0.0.0:8080/hello")
+        put("jwt.realm", "Access to 'hello'")
+      }
+      module()
+    }) {
       handleRequest(HttpMethod.Get, "/").apply {
         assertEquals(HttpStatusCode.OK, response.status())
         assertEquals("Hi, I'm Memster!", response.content)

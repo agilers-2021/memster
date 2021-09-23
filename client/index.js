@@ -8,7 +8,7 @@ function loginInit() {
     $form.addEventListener("submit", function (e) {
         // TODO api call
         e.preventDefault();
-        window.location.replace("/me");
+        window.location.replace("/user_info");
     })
 }
 
@@ -18,7 +18,7 @@ function createUserInit() {
     $form.addEventListener("submit", function (e) {
         // TODO api call
         e.preventDefault();
-        window.location.replace("/me");
+        window.location.replace("/user_info");
     })
 }
 
@@ -27,6 +27,6 @@ function userPageInit() {
 
     $logout.addEventListener("click", function () {
         // TODO logic
-        window.location.replace("/login");
+        window.location.replace("/authenticate");
     })
 }
