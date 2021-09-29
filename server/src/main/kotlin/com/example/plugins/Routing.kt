@@ -14,6 +14,7 @@ import com.example.secret
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.auth.jwt.*
+import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
@@ -34,14 +35,21 @@ fun Application.configureRouting() {
         call.respondRedirect("/api/authenticate")
       }
 
-      static("create_account") {
-        default("client/create_user.html")
+      route ("create_account") {
+        static {
+          default("client/create_user.html")
+          files("client")
+        }
       }
 
       route("api") {
+        static {
+          files("client")
+        }
         route("authenticate") {
           static {
             default("client/login.html")
+            files("client")
           }
           post {
             val credentials = call.receive<Credentials>()
@@ -64,18 +72,24 @@ fun Application.configureRouting() {
               default("client/user_page.html")
             }
 
-            get {
-              val principal = call.principal<JWTPrincipal>()
-              val username = principal!!.payload.getClaim("username").asString()
-              val id = storage.getUserId(username) ?: let {
-                val response = createFailureResponse(ErrorDescription("weird"))
-                return@get call.respond(response)
-              }
-              val info = storage.getUserById(id) ?: let {
-                val response = createFailureResponse(ErrorDescription("weird"))
-                return@get call.respond(response)
-              }
-              call.respond(createSuccessResponse(info))
+
+            post {
+              val params = call.receiveParameters()
+              val login = params["login"]
+              val password = params["password"]
+              val repeat_password = params["repeat-password"]
+              return@post call.respond(HttpStatusCode.OK)
+//              val principal = call.principal<JWTPrincipal>()
+//              val username = principal!!.payload.getClaim("username").asString()
+//              val id = storage.getUserId(username) ?: let {
+//                val response = createFailureResponse(ErrorDescription("weird"))
+//                return@post call.respond(response)
+//              }
+//              val info = storage.getUserById(id) ?: let {
+//                val response = createFailureResponse(ErrorDescription("weird"))
+//                return@post call.respond(response)
+//              }
+//              call.respond(createSuccessResponse(info))
             }
           }
         }

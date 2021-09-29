@@ -12,15 +12,16 @@ function loginInit() {
     })
 }
 
-function createUserInit() {
-    let $form = document.getElementById("create-user-form");
-
-    $form.addEventListener("submit", function (e) {
-        // TODO api call
-        e.preventDefault();
-        window.location.replace("/user_info");
-    })
-}
+// Это, кажется, не нужно. Формочка сама умеет POST себя делать
+//function createUserInit() {
+//    let $form = document.getElementById("create-user-form");
+//
+//    $form.addEventListener("submit", function (e) {
+//        // TODO api call
+//        e.preventDefault();
+//        window.location.replace("/user_info");
+//    })
+//}
 
 function userPageInit() {
     let $logout = document.getElementById("logout-button");
