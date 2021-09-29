@@ -3,6 +3,7 @@ package com.example
 import com.example.models.UserObject
 
 interface UserStorage {
+
   fun getUserId(username: String): Int?
 
   fun updateUser(id: Int, user: UserObject): Boolean

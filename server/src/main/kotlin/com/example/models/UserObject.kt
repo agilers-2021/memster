@@ -5,7 +5,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class UserObject(
-//  val id: Int,
   @SerialName("username") val username: String,
   @SerialName("display_name") val displayName: String,
   @SerialName("current_photo_url") val photoUrl: String? = null
