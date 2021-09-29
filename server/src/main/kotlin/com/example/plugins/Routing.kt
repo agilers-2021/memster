@@ -2,18 +2,14 @@ package com.example.plugins
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
-import com.example.UserStorage
-import com.example.audience
+import com.example.*
+import com.example.internal.dummyRealization.InMemoryImageStorage
 import com.example.internal.dummyRealization.InMemoryUserStorage
-import com.example.issuer
-import com.example.models.Credentials
-import com.example.models.ErrorDescription
-import com.example.models.createFailureResponse
-import com.example.models.createSuccessResponse
-import com.example.secret
+import com.example.models.*
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.auth.jwt.*
+import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
@@ -23,6 +19,7 @@ import io.ktor.http.content.*
 fun Application.configureRouting() {
 
   val storage: UserStorage = InMemoryUserStorage()
+  val imageStorage: ImageStorage = InMemoryImageStorage()
 
   routing {
     route("/") {
@@ -58,7 +55,55 @@ fun Application.configureRouting() {
           }
         }
 
+        route("register") {
+          static {
+            default("client/create_user.html")  // TODO: Change to page with just login and password
+          }
+          post {
+            val request = call.receive<RegisterRequest>()
+            //TODO: handle passwords
+
+            storage.putUser(request.username,
+                            UserObject(request.display_name ?: request.username, null))
+
+            val token = JWT.create()
+              .withAudience(audience)
+              .withIssuer(issuer)
+              .withClaim("username",request.username)
+              .withExpiresAt(Date(System.currentTimeMillis() + 60000))
+              .sign(Algorithm.HMAC256(secret))
+            call.respond(hashMapOf("token" to token))
+          }
+        }
+
         authenticate("auth-jwt") {
+          route("settings") {
+            //TODO: settings page
+            post {
+              val principal = call.principal<JWTPrincipal>()
+              val username = principal!!.payload.getClaim("username").asString()
+              val id = storage.getUserId(username) ?: let {
+                val response = createFailureResponse(ErrorDescription("weird"))
+                return@post call.respond(response)
+              }
+              val info = storage.getUserById(id) ?: let {
+                val response = createFailureResponse(ErrorDescription("weird"))
+                return@post call.respond(response)
+              }
+              val request = call.receive<SettingsRequest>()
+              if (request.delete_photo == true) {
+                imageStorage.deleteImage(info.photoUrl!!)
+              }
+              var photoUrl = info.photoUrl
+              if (request.set_photo != null) {
+                photoUrl = imageStorage.putImage(username, Base64.getDecoder().decode(request.set_photo))
+              }
+              val newInfo = UserObject(request.display_name ?: info.displayName, photoUrl)
+              storage.updateUser(id, newInfo)
+              call.respond(HttpStatusCode.OK)
+            }
+          }
+
           route("user_info") {
             static {
               default("client/user_page.html")
