@@ -23,6 +23,7 @@ fun Application.module() {
   install(ContentNegotiation) {
     json()
   }
+  install(CallLogging)
   configureSecurity()
   configureRouting()
 }

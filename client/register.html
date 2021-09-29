@@ -2,23 +2,30 @@
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <title>Login</title>
+        <title>Register</title>
         <link rel="stylesheet" href="./index.css">
     </head>
-    <body onload="loginInit()">
+    <body onload="registerInit()">
         <main>
-            <form id="login_form" action="http://0.0.0.0:8080/api/authenticate" method="post">
+            <form id="create_user_form" action="http://0.0.0.0:8080/api/register" method="post">
                 <p>
                     <label for="username">Username</label>
                     <input type="text" id="username"/>
+                </p>
+                <p>
+                    <label for="display_name">Display name</label>
+                    <input type="text" id="display_name"/>
                 </p>
                 <p>
                     <label for="password">Password</label>
                     <input type="password" id="password"/>
                 </p>
                 <p>
-                    <button type="submit" id="login_button">Log in</button>
-                    <button type="button" id="create_account_button">Create account</button>
+                    <label for="repeat_password">Confirm password</label>
+                    <input type="password" id="repeat_password"/>
+                </p>
+                <p>
+                    <button type="submit" id="create_user_button">Create</button>
                 </p>
             </form>
         </main>

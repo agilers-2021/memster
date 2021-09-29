@@ -15,6 +15,7 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import java.util.*
 import io.ktor.http.content.*
+import io.ktor.util.pipeline.*
 
 fun Application.configureRouting() {
 
@@ -28,25 +29,29 @@ fun Application.configureRouting() {
       }
 
       get {
-        call.respondRedirect("/api/authenticate")
+        call.respondRedirect("/login")
       }
 
-      route ("create_account") {
+      route ("login") {
         static {
-          default("client/create_user.html")
-          files("client")
+          default("client/login.html")
+        }
+      }
+
+      route ("register") {
+        static {
+          default("client/register.html")
+        }
+      }
+
+      route ("user_info") {
+        static {
+          default("client/user_info.html")
         }
       }
 
       route("api") {
-        static {
-          files("client")
-        }
         route("authenticate") {
-          static {
-            default("client/login.html")
-            files("client")
-          }
           post {
             val credentials = call.receive<Credentials>()
 
@@ -58,20 +63,19 @@ fun Application.configureRouting() {
               .withClaim("username", credentials.username)
               .withExpiresAt(Date(System.currentTimeMillis() + 60000))
               .sign(Algorithm.HMAC256(secret))
-            call.respond(hashMapOf("token" to token))
+            call.respond(TokenResponse(token))
           }
         }
 
         route("register") {
-          static {
-            default("client/create_user.html")  // TODO: Change to page with just login and password
-          }
           post {
             val request = call.receive<RegisterRequest>()
             //TODO: handle passwords
 
-            storage.putUser(request.username,
-                            UserObject(request.display_name ?: request.username, null))
+            storage.putUser(
+              request.username,
+              UserObject(request.username, request.display_name ?: request.username, null)
+            )
 
             val token = JWT.create()
               .withAudience(audience)
@@ -79,78 +83,44 @@ fun Application.configureRouting() {
               .withClaim("username",request.username)
               .withExpiresAt(Date(System.currentTimeMillis() + 60000))
               .sign(Algorithm.HMAC256(secret))
-            call.respond(hashMapOf("token" to token))
+            call.respond(TokenResponse(token))
           }
         }
 
         authenticate("auth-jwt") {
+          val getUserId: PipelineContext<Unit, ApplicationCall>.() -> Int = {
+            val principal = call.principal<JWTPrincipal>()!!
+            val username = principal.payload.getClaim("username").asString()
+            val id = storage.getUserId(username) ?: error("no user with specified id found")
+            id
+          }
+
           route("settings") {
             //TODO: settings page
             post {
-              val principal = call.principal<JWTPrincipal>()
-              val username = principal!!.payload.getClaim("username").asString()
-              val id = storage.getUserId(username) ?: let {
-                val response = createFailureResponse(ErrorDescription("weird"))
-                return@post call.respond(response)
-              }
-              val info = storage.getUserById(id) ?: let {
-                val response = createFailureResponse(ErrorDescription("weird"))
-                return@post call.respond(response)
-              }
+              val id = getUserId()
+              val info = storage.getUserById(id) ?: error("user info not found")
               val request = call.receive<SettingsRequest>()
               if (request.delete_photo == true) {
                 imageStorage.deleteImage(info.photoUrl!!)
               }
               var photoUrl = info.photoUrl
               if (request.set_photo != null) {
-                photoUrl = imageStorage.putImage(username, Base64.getDecoder().decode(request.set_photo))
+                photoUrl = imageStorage.putImage(info.username, Base64.getDecoder().decode(request.set_photo))
               }
-              val newInfo = UserObject(request.display_name ?: info.displayName, photoUrl)
+              val newInfo = UserObject(info.username, request.display_name ?: info.displayName, photoUrl)
               storage.updateUser(id, newInfo)
               call.respond(HttpStatusCode.OK)
             }
           }
 
-          route("user_info") {
-            static {
-              default("client/user_page.html")
-            }
-
-
-            post {
-              val params = call.receiveParameters()
-              val login = params["login"]
-              val password = params["password"]
-              val repeat_password = params["repeat-password"]
-              return@post call.respond(HttpStatusCode.OK)
-//              val principal = call.principal<JWTPrincipal>()
-//              val username = principal!!.payload.getClaim("username").asString()
-//              val id = storage.getUserId(username) ?: let {
-//                val response = createFailureResponse(ErrorDescription("weird"))
-//                return@post call.respond(response)
-//              }
-//              val info = storage.getUserById(id) ?: let {
-//                val response = createFailureResponse(ErrorDescription("weird"))
-//                return@post call.respond(response)
-//              }
-//              call.respond(createSuccessResponse(info))
-            }
+          get("user_info") {
+            val id = getUserId()
+            val info = storage.getUserById(id) ?: error("user info not found")
+            call.respond(info)
           }
-        }
-
-        get("user_info/{id}") {
-          val id = call.parameters["id"]?.toIntOrNull() ?: let {
-            val response = createFailureResponse(ErrorDescription("invalid id supplied"))
-            return@get call.respond(response)
-          }
-          val info = storage.getUserById(id) ?: let {
-            val response = createFailureResponse(ErrorDescription("no user with that id found"))
-            return@get call.respond(response)
-          }
-          call.respond(createSuccessResponse(info))
         }
       }
     }
   }
 }
-
