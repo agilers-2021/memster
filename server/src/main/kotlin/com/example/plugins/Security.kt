@@ -22,6 +22,7 @@ fun Application.configureSecurity() {
         .require(Algorithm.HMAC256(secret))
         .withAudience(audience)
         .withIssuer(issuer)
+        .acceptExpiresAt(604800L) // a week
         .build())
 
       validate { credential ->
