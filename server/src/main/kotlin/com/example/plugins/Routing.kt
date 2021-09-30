@@ -4,8 +4,10 @@ import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.example.*
 import com.example.internal.dummyRealization.InMemoryImageStorage
-import com.example.internal.dummyRealization.InMemoryUserStorage
 import com.example.models.*
+import com.example.internal.dummyRealization.InMemoryUserStorage
+import com.example.models.Credentials
+import com.example.models.ErrorDescription
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.auth.jwt.*
@@ -21,6 +23,7 @@ fun Application.configureRouting() {
 
   val storage: UserStorage = InMemoryUserStorage()
   val imageStorage: ImageStorage = InMemoryImageStorage()
+//  val storage = DBMaster
 
   routing {
     route("/") {
