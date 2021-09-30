@@ -3,11 +3,12 @@ package com.example.plugins
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.example.*
+import com.example.internal.dummyRealization.DummyPasswordStorage
 import com.example.internal.dummyRealization.InMemoryImageStorage
 import com.example.models.*
 import com.example.internal.dummyRealization.InMemoryUserStorage
+import com.example.internal.dummyRealization.PasswordErrorDescription
 import com.example.models.Credentials
-import com.example.models.ErrorDescription
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.auth.jwt.*
@@ -24,6 +25,7 @@ fun Application.configureRouting() {
   val storage: UserStorage = InMemoryUserStorage()
   val imageStorage: ImageStorage = InMemoryImageStorage()
 //  val storage = DBMaster
+  val passwordStorage: PasswordStorage = DummyPasswordStorage()
 
   routing {
     route("/") {
@@ -58,7 +60,15 @@ fun Application.configureRouting() {
           post {
             val credentials = call.receive<Credentials>()
 
-            //TODO - check credentials
+            when(passwordStorage.checkCredentials(credentials)) {
+              PasswordErrorDescription.NO_SUCH_USER -> {
+                error("no such user exist")
+              }
+              PasswordErrorDescription.INCORRECT_PASSWORD -> {
+                error("incorrect password")
+              }
+              else -> {}
+            }
 
             val token = JWT.create()
               .withAudience(audience)
@@ -73,7 +83,8 @@ fun Application.configureRouting() {
         route("register") {
           post {
             val request = call.receive<RegisterRequest>()
-            //TODO: handle passwords
+
+            passwordStorage.storeCredentials(Credentials(request.username, request.password))
 
             storage.putUser(
               request.username,
