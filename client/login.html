@@ -7,19 +7,14 @@
     </head>
     <body onload="loginInit()">
         <main>
-            <form id="login_form" action="http://0.0.0.0:8080/api/authenticate" method="post">
-                <p>
-                    <label for="username">Username</label>
-                    <input type="text" id="username"/>
-                </p>
-                <p>
-                    <label for="password">Password</label>
-                    <input type="password" id="password"/>
-                </p>
-                <p>
-                    <button type="submit" id="login_button">Log in</button>
-                    <button type="button" id="create_account_button">Create account</button>
-                </p>
+            <form class="input-form" id="login_form" action="http://0.0.0.0:8080/api/authenticate" method="post">
+                <label class="unused-label" for="username"></label>
+                <label class="unused-label" for="password"></label>
+
+                <input class="input-field" type="text" id="username" placeholder="Username"/>
+                <input class="input-field" type="password" id="password" placeholder="Password"/>
+                <button class="input-form-button login-button" type="submit" id="login_button">Log in</button>
+                <button class="input-form-button register-button" type="button" id="create_account_button">Create account</button>
             </form>
         </main>
 

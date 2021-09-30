@@ -1,0 +1,106 @@
+html,
+body {
+    font-family: sans-serif;
+
+    margin: 0;
+}
+
+nav {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: stretch;
+
+    position: sticky;
+    top: 0;
+    width: 100%;
+    height: 60px;
+
+    border-bottom: 1px solid lightgrey;
+    border-radius: 4px;
+    box-shadow: 0 0 2px 2px lightgrey;
+
+    background: white;
+}
+
+main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 30px;
+}
+
+.input-form {
+    width: 320px;
+    padding: 12px 20px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+
+    box-shadow: 0 0 3px 3px lightgrey;
+}
+
+.input-field {
+    height: 28px;
+    margin: 8px 0;
+    padding: 6px;
+
+    border: 1px solid lightgrey;
+    border-radius: 4px;
+
+    outline: none;
+}
+
+.input-form-button {
+    height: 42px;
+    margin: 8px 0;
+
+    border: none;
+    border-radius: 4px;
+
+    color: white;
+
+    cursor: pointer;
+}
+
+.login-button {
+    background-color: dodgerblue;
+}
+
+.register-button {
+    background-color: limegreen;
+}
+
+.unused-label {
+    display: none;
+}
+
+.profile-box {
+    display: flex;
+}
+
+.logout-button {
+    padding: 0 16px;
+
+    border: none;
+
+    cursor: pointer;
+}
+
+.profile-picture {
+    width: 300px;
+    height: 300px;
+}
+
+.user-info {
+    padding: 12px;
+}
+
+.user-info-item {
+    margin-bottom: 8px;
+}
+
+.user-title {
+    font-weight: bold;
+}

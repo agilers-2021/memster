@@ -6,12 +6,17 @@
         <link rel="stylesheet" href="./index.css">
     </head>
     <body onload="userInfoInit()">
+        <nav>
+            <button class="logout-button" type="button" id="logout_button">Log out</button>
+        </nav>
         <main>
-            <p>Username: <span id="username">...</span></p>
-            <p>Display name: <span id="display_name">...</span></p>
-            <p>
-                <button type="button" id="logout_button">Log out</button>
-            </p>
+            <div class="profile-box">
+                <img class="profile-picture" src="images/default-plofile-picture.png" alt="profile picture">
+                <div class="user-info">
+                    <div class="user-info-item user-title"><span id="display_name">...</span></div>
+                    <div class="user-info-item"><span id="username">...</span></div>
+                </div>
+            </div>
         </main>
 
         <script src="index.js"></script>

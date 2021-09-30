@@ -7,26 +7,17 @@
     </head>
     <body onload="registerInit()">
         <main>
-            <form id="create_user_form" action="http://0.0.0.0:8080/api/register" method="post">
-                <p>
-                    <label for="username">Username</label>
-                    <input type="text" id="username"/>
-                </p>
-                <p>
-                    <label for="display_name">Display name</label>
-                    <input type="text" id="display_name"/>
-                </p>
-                <p>
-                    <label for="password">Password</label>
-                    <input type="password" id="password"/>
-                </p>
-                <p>
-                    <label for="repeat_password">Confirm password</label>
-                    <input type="password" id="repeat_password"/>
-                </p>
-                <p>
-                    <button type="submit" id="create_user_button">Create</button>
-                </p>
+            <form class="input-form" id="create_user_form" action="http://0.0.0.0:8080/api/register" method="post">
+                <label class="unused-label" for="username"></label>
+                <label class="unused-label" for="display_name"></label>
+                <label class="unused-label" for="password"></label>
+                <label class="unused-label" for="repeat_password"></label>
+
+                <input class="input-field" type="text" id="username" placeholder="Username"/>
+                <input class="input-field" type="text" id="display_name" placeholder="Display name"/>
+                <input class="input-field" type="password" id="password" placeholder="Password"/>
+                <input class="input-field" type="password" id="repeat_password" placeholder="Confirm password"/>
+                <button class="input-form-button register-button" type="submit" id="create_user_button">Create</button>
             </form>
         </main>
 
