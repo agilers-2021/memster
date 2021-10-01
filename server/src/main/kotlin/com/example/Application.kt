@@ -33,7 +33,7 @@ fun Application.module() {
     driver = "org.h2.Driver"
   )
   transaction {
-    DBUserStorage().init()
+    DBUserStorage.init()
   }
   configureSecurity()
   configureRouting()
@@ -45,18 +45,24 @@ object DBMaster {
 
   fun putUser(username: String, userObject: UserObject) =
     transaction(connection) {
-      val id = DBUserStorage().putUser(username, userObject)
+      val id = DBUserStorage.putUser(username, userObject)
     }
 
   fun getUserId(username: String): Int? {
     return transaction(connection) {
-      DBUserStorage().getUserId(username)
+      DBUserStorage.getUserId(username)
     }
   }
 
   fun getUserById(id: Int):UserObject? {
     return transaction(connection) {
-      DBUserStorage().getUserById(id)
+      DBUserStorage.getUserById(id)
+    }
+  }
+
+  fun updateUser(id: Int, user: UserObject) {
+    return transaction(connection) {
+      DBUserStorage.updateUser(id, user)
     }
   }
 }
