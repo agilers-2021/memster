@@ -7,7 +7,6 @@ import com.example.internal.dummyRealization.DummyPasswordStorage
 import com.example.internal.dummyRealization.InMemoryImageStorage
 import com.example.models.*
 import com.example.internal.dummyRealization.InMemoryUserStorage
-import com.example.internal.dummyRealization.PasswordErrorDescription
 import com.example.models.Credentials
 import io.ktor.application.*
 import io.ktor.auth.*
@@ -22,9 +21,9 @@ import io.ktor.util.pipeline.*
 
 fun Application.configureRouting() {
 
-  val storage: UserStorage = InMemoryUserStorage()
+//  val storage: UserStorage = InMemoryUserStorage()
   val imageStorage: ImageStorage = InMemoryImageStorage()
-//  val storage = DBMaster
+  val storage = DBMaster
   val passwordStorage: PasswordStorage = DummyPasswordStorage()
 
   routing {
