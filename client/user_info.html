@@ -7,18 +7,18 @@
     </head>
     <body onload="userInfoInit()">
         <nav>
-            <button class="edit-button" type="button" id="edit_button">Edit</button>
             <button class="logout-button" type="button" id="logout_button">Log out</button>
+            <button class="edit-button" type="button" id="edit_button">Edit</button>
         </nav>
         <main>
-            <div id="parent" style="overflow: hidden;">
-                <div class="user-info-item" style="float: left; width: 300px">
-                    <img id="profile_image" style="width: 100%; height: auto;" class="profile-picture" src="images/default-profile-picture.png" alt="profile picture">
-                    <div><span id="anecdote" style="display:block; width: 100%; word-wrap: break-word; white-space: pre-wrap">...</span></div>
+            <div class="profile-box">
+                <div class="profile-content">
+                    <img id="profile_image" class="profile-picture" src="images/default-profile-picture.png" alt="profile picture">
+                    <div class="long-text-box"><span class="long-text" id="anecdote">...</span></div>
                 </div>
                 <div class="user-info" style="float: left">
                     <div class="user-info-item user-title"><span id="display_name">...</span></div>
-                    <div class="user-info-item"><span id="username">...</span></div>
+                    <div class="user-info-item"><span class="username" id="username">...</span></div>
                 </div>
             </div>
         </main>

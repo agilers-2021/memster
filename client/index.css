@@ -52,6 +52,11 @@ main {
     outline: none;
 }
 
+.long-text-input {
+    height: 100px;
+    resize: none;
+}
+
 .input-form-button {
     height: 42px;
     margin: 8px 0;
@@ -68,8 +73,13 @@ main {
     background-color: dodgerblue;
 }
 
-.register-button {
+.register-button,
+.save-button {
     background-color: limegreen;
+}
+
+.cancel-button {
+    background-color: dimgrey;
 }
 
 .error-flag,
@@ -96,17 +106,26 @@ main {
     display: flex;
 }
 
-.logout-button .edit-button {
+.profile-content {
+    width: 400px;
+}
+
+.logout-button,
+.edit-button {
     padding: 0 16px;
 
-    border: none;
+    border: 1px solid lightgrey;
+
+    color: #404040;
 
     cursor: pointer;
 }
 
 .profile-picture {
-    width: 300px;
-    height: 300px;
+    width: 100%;
+    height: auto;
+
+    margin-bottom: 12px;
 }
 
 .user-info {
@@ -119,4 +138,34 @@ main {
 
 .user-title {
     font-weight: bold;
+}
+
+.username:before {
+    content: "@";
+}
+
+.long-text-box {
+    width: 100%;
+}
+
+.long-text {
+    word-wrap: break-word;
+    white-space: pre-wrap
+}
+
+.edit-form {
+    width: 500px;
+
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    row-gap: 4px;
+    column-gap: 12px;
+
+    justify-items: stretch;
+    align-items: center;
+}
+
+.save-button,
+.cancel-button {
+    grid-column: 1 / 3;
 }

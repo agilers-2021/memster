@@ -1,13 +1,19 @@
 function editInit() {
     let token = localStorage.getItem("token");
     let $form = document.getElementById("edit_form");
+    let $isError = document.getElementById("is_error");
+    let $errorText = document.getElementById("error_text");
+
+    document.getElementById("cancel_button").addEventListener("click", function (e) {
+        window.history.back();
+    });
 
     $form.addEventListener("submit", function (e) {
         e.preventDefault();
 
         const reader = new FileReader();
 
-        let username = document.getElementById("username").value;
+        let display_name = document.getElementById("display_name").value;
         let anecdote = document.getElementById("anecdote").value;
         let image = document.getElementById("img").files[0];
         let form = e.target;
@@ -22,7 +28,7 @@ function editInit() {
                     'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({
-                    display_name: username ? username : undefined,
+                    display_name: display_name ? display_name : undefined,
                     anecdote: anecdote ? anecdote : undefined,
                     set_photo: reader.result ? reader.result.split(',')[1] : undefined
                 }),
@@ -40,6 +46,17 @@ function editInit() {
         }
     })
 
+    fetch("/api/user_info", {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        },
+    })
+        .then((response) => response.json())
+        .then((data) => {
+            document.getElementById("display_name").value = data["display_name"];
+            document.getElementById("anecdote").value = data["anecdote"];
+        })
 }
 
 function loginInit() {
