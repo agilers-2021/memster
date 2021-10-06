@@ -6,6 +6,8 @@ function loginInit() {
 
     let $createAccount = document.getElementById("create_account_button");
     let $form = document.getElementById("login_form");
+    let $isError = document.getElementById("is_error");
+    let $errorText = document.getElementById("error_text");
 
     $createAccount.addEventListener("click", function () {
         window.location.replace("/register");
@@ -27,10 +29,22 @@ function loginInit() {
                 password: password,
             }),
         })
-            .then((response) => response.json())
-            .then((data) => {
-                localStorage.setItem("token", data["token"])
-                window.location.replace("/user_info");
+            .then((response) => {
+                console.log(response);
+                if (response.ok) {
+                    let data = response.json();
+                    //localStorage.setItem("token", data["token"])
+                    //window.location.replace("/user_info");
+                } else {
+                    response.text().then((text) => {
+                        $isError.checked = true;
+                        $errorText.innerText = text;
+                    });
+                }
+            })
+            .catch((error) => {
+                $isError.checked = true;
+                $errorText.innerText = error.message;
             })
     })
 }
