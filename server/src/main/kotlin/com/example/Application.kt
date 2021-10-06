@@ -1,5 +1,6 @@
 package com.example
 
+import com.example.internal.dbStorage.DBImageStorage
 import com.example.internal.dbStorage.DBPasswordStorage
 import com.example.internal.dbStorage.DBUserStorage
 import com.example.models.UserObject
@@ -55,6 +56,10 @@ fun Application.module() {
   passwordStorage.init()
   DBMaster.passwordStorage = passwordStorage
 
+  val imagesStorage = DBImageStorage(DBMaster.connection, issuer + "api/get_image?path=")
+  imagesStorage.init()
+  DBMaster.imagesStorage = imagesStorage
+
   configureSecurity()
   configureRouting()
 }
@@ -63,6 +68,7 @@ object DBMaster {
 
   lateinit var connection: Database
   lateinit var passwordStorage: PasswordStorage
+  lateinit var imagesStorage: ImageStorage
 
   fun putUser(username: String, userObject: UserObject) =
     transaction(connection) {

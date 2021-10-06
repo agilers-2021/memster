@@ -20,7 +20,6 @@ object DBUserStorage: UserStorage {
   fun init() {
     SchemaUtils.create(UserTable)
     nextId = UserTable.selectAll().toList().size + 1
-    println(nextId)
   }
 
   override fun getUserId(username: String): Int? {
@@ -41,7 +40,6 @@ object DBUserStorage: UserStorage {
   }
 
   override fun putUser(username: String, userObject: UserObject): Int? {
-    println(nextId)
     UserTable.insert {
       it[id] = nextId
       nextId += 1

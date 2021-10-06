@@ -25,7 +25,8 @@ import java.nio.file.Files
 fun Application.configureRouting() {
 
 //  val storage: UserStorage = InMemoryUserStorage()
-  val imageStorage: ImageStorage = InMemoryImageStorage(issuer + "api/get_image?path=")
+//  val imageStorage: ImageStorage = InMemoryImageStorage(issuer + "api/get_image?path=")
+  val imageStorage : ImageStorage = DBMaster.imagesStorage
   val storage = DBMaster
   val passwordStorage: PasswordStorage = DummyPasswordStorage()
 
