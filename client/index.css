@@ -92,10 +92,6 @@ main {
     display: none;
 }
 
-#is_error:checked ~ .input-form > .input-field {
-    border-color: indianred;
-}
-
 .profile-box {
     display: flex;
 }
