@@ -79,7 +79,6 @@ function userInfoInit() {
     })
         .then((response) => response.json())
         .then((data) => {
-            console.log(data)
             document.title = data["display_name"];
             document.getElementById("display_name").innerText = data["display_name"];
             document.getElementById("username").innerText = data["username"];
