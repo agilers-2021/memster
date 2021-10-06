@@ -13,7 +13,7 @@ class DBImageStorage(val connection: Database, private val handlerUrl: String = 
 
     object ImagesTable : Table() {
         val path = integer("id").primaryKey()
-        val image = binary("image", 100000)
+        val image = binary("image", 10000000)
     }
 
     fun init() {
