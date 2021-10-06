@@ -87,7 +87,7 @@ fun Application.configureRouting() {
 
             storage.putUser(
               request.username,
-              UserObject(request.username, request.display_name ?: request.username, null)
+              UserObject(request.username, request.display_name ?: request.username, null, "kolobok umer")
             )
 
             val token = JWT.create()
@@ -121,7 +121,7 @@ fun Application.configureRouting() {
               if (request.set_photo != null) {
                 photoUrl = imageStorage.putImage(info.username, Base64.getDecoder().decode(request.set_photo))
               }
-              val newInfo = UserObject(info.username, request.display_name ?: info.displayName, photoUrl)
+              val newInfo = UserObject(info.username, request.display_name ?: info.displayName, photoUrl, "kolobok umer")
               storage.updateUser(id, newInfo)
               call.respond(HttpStatusCode.OK)
             }

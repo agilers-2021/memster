@@ -82,6 +82,7 @@ function userInfoInit() {
             document.title = data["display_name"];
             document.getElementById("display_name").innerText = data["display_name"];
             document.getElementById("username").innerText = data["username"];
+            document.getElementById("anecdote").innerText = data["anecdote"];
         })
         .catch(() => {
             localStorage.removeItem("token");
