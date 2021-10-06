@@ -1,5 +1,6 @@
 package com.example
 
+import com.example.internal.dbStorage.DBPasswordStorage
 import com.example.internal.dbStorage.DBUserStorage
 import com.example.models.UserObject
 import com.example.plugins.*
@@ -32,9 +33,15 @@ fun Application.module() {
     "jdbc:h2:./testdb",
     driver = "org.h2.Driver"
   )
+
   transaction {
     DBUserStorage.init()
   }
+
+  val passwordStorage = DBPasswordStorage(DBMaster.connection)
+  passwordStorage.init()
+  DBMaster.passwordStorage = passwordStorage
+
   configureSecurity()
   configureRouting()
 }
@@ -42,6 +49,7 @@ fun Application.module() {
 object DBMaster {
 
   lateinit var connection: Database
+  lateinit var passwordStorage: PasswordStorage
 
   fun putUser(username: String, userObject: UserObject) =
     transaction(connection) {

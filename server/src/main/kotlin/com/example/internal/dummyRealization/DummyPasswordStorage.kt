@@ -1,6 +1,6 @@
 package com.example.internal.dummyRealization
 
-import com.example.PasswordErrorDescription
+import com.example.CredentialsCheckResult
 import com.example.PasswordStorage
 import com.example.models.Credentials
 
@@ -10,7 +10,7 @@ class DummyPasswordStorage : PasswordStorage {
 
   }
 
-  override fun checkCredentials(credentials: Credentials): PasswordErrorDescription {
-    return PasswordErrorDescription.SUCCESS
+  override fun checkCredentials(credentials: Credentials): CredentialsCheckResult {
+    return CredentialsCheckResult.SUCCESS
   }
 }

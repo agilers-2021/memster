@@ -3,10 +3,10 @@ package com.example.plugins
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.example.*
+import com.example.internal.dbStorage.DBPasswordStorage
 import com.example.internal.dummyRealization.DummyPasswordStorage
 import com.example.internal.dummyRealization.InMemoryImageStorage
 import com.example.models.*
-import com.example.internal.dummyRealization.InMemoryUserStorage
 import com.example.models.Credentials
 import io.ktor.application.*
 import io.ktor.auth.*
@@ -24,7 +24,6 @@ fun Application.configureRouting() {
 //  val storage: UserStorage = InMemoryUserStorage()
   val imageStorage: ImageStorage = InMemoryImageStorage()
   val storage = DBMaster
-  val passwordStorage: PasswordStorage = DummyPasswordStorage()
 
   routing {
     route("/") {
@@ -59,12 +58,9 @@ fun Application.configureRouting() {
           post {
             val credentials = call.receive<Credentials>()
 
-            when(passwordStorage.checkCredentials(credentials)) {
-              PasswordErrorDescription.NO_SUCH_USER -> {
-                error("no such user exist")
-              }
-              PasswordErrorDescription.INCORRECT_PASSWORD -> {
-                error("incorrect password")
+            when(storage.passwordStorage.checkCredentials(credentials)) {
+              CredentialsCheckResult.INVALID_CREDENTIALS -> {
+                error("invalid username or password")
               }
               else -> {}
             }
@@ -83,7 +79,7 @@ fun Application.configureRouting() {
           post {
             val request = call.receive<RegisterRequest>()
 
-            passwordStorage.storeCredentials(Credentials(request.username, request.password))
+            storage.passwordStorage.storeCredentials(Credentials(request.username, request.password))
 
             storage.putUser(
               request.username,
