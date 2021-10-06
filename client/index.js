@@ -8,6 +8,7 @@ function editInit() {
         const reader = new FileReader();
 
         let username = document.getElementById("username").value;
+        let anecdote = document.getElementById("anecdote").value;
         let image = document.getElementById("img").files[0];
         let form = e.target;
 
@@ -22,6 +23,7 @@ function editInit() {
                 },
                 body: JSON.stringify({
                     display_name: username ? username : undefined,
+                    anecdote: anecdote ? anecdote : undefined,
                     set_photo: reader.result ? reader.result.split(',')[1] : undefined
                 }),
             }).then((_) => {

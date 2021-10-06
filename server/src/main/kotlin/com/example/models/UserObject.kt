@@ -25,4 +25,5 @@ data class RegisterRequest(val username: String, val password: String, val displ
 
 @Serializable
 data class SettingsRequest(val display_name: String? = null, val password: String? = null,
-                           val set_photo: String? = null, val delete_photo: Boolean? = null)
+                           val set_photo: String? = null, val delete_photo: Boolean? = null,
+                           val anecdote: String? = null)

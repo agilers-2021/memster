@@ -144,7 +144,10 @@ fun Application.configureRouting() {
                 imageStorage.deleteImage(info.photoUrl)
                 photoUrl = null
               }
-              val newInfo = UserObject(info.username, request.display_name ?: info.displayName, photoUrl, "kolobok umer")
+              var anecdote = info.anecdote
+              if (request.anecdote != null)
+                anecdote = request.anecdote
+              val newInfo = UserObject(info.username, request.display_name ?: info.displayName, photoUrl, anecdote)
               storage.updateUser(id, newInfo)
               call.respond(HttpStatusCode.OK)
             }
