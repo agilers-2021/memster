@@ -57,6 +57,12 @@ fun Application.configureRouting() {
         }
       }
 
+      route ("edit") {
+        static {
+          default("client/edit.html")
+        }
+      }
+
       route("api") {
         route("authenticate") {
           post {
@@ -126,7 +132,6 @@ fun Application.configureRouting() {
           }
 
           route("settings") {
-            //TODO: settings page
             post {
               val id = getUserId()
               val info = storage.getUserById(id) ?: error("user info not found")

@@ -1,3 +1,40 @@
+function editInit() {
+    let token = localStorage.getItem("token");
+    let $form = document.getElementById("edit_form");
+
+    $form.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const reader = new FileReader();
+
+        let username = document.getElementById("username").value;
+        let image = document.getElementById("img").files[0];
+        let form = e.target;
+
+        reader.readAsDataURL(image)
+
+
+        reader.onloadend = function () {
+            fetch(form.action, {
+                method: form.method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    display_name: username,
+                    set_photo: reader.result.split(',')[1]
+                }),
+            })
+                .catch((error) => {
+                    $isError.checked = true;
+                    $errorText.innerText = error.message;
+                });
+        }
+    })
+
+}
+
 function loginInit() {
     let token = localStorage.getItem("token");
     if (token !== null) {
@@ -136,5 +173,10 @@ function userInfoInit() {
     $logout.addEventListener("click", function () {
         localStorage.removeItem("token");
         window.location.replace("/login");
+    })
+
+    let $edit = document.getElementById("edit_button");
+    $edit.addEventListener("click", function () {
+        window.open("/edit", "_self");
     })
 }

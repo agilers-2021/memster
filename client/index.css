@@ -96,7 +96,7 @@ main {
     display: flex;
 }
 
-.logout-button {
+.logout-button .edit-button {
     padding: 0 16px;
 
     border: none;

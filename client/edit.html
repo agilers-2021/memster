@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit user</title>
+</head>
+<body onload="editInit()">
+<main>
+
+    <form class="input-form" id="edit_form" action="/api/settings" method="post">
+        <input class="input-field" type="text" id="username" placeholder="Username"/>
+        <label for="img">Select new meme:</label>
+        <input type="file" id="img" name="img" accept="image/*">
+        <button class="edit-button" type="submit" id="edit_button">Save</button>
+    </form>
+    <div class="error-message">
+        <p id="error_text"></p>
+    </div>
+</main>
+
+<script src="index.js"></script>
+</body>
+</html>
