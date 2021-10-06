@@ -11,10 +11,9 @@ function editInit() {
         let image = document.getElementById("img").files[0];
         let form = e.target;
 
-        reader.readAsDataURL(image)
-
-
-        reader.onloadend = function () {
+        if (image)
+            reader.readAsDataURL(image)
+        let f = function () {
             fetch(form.action, {
                 method: form.method,
                 headers: {
@@ -22,14 +21,20 @@ function editInit() {
                     'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({
-                    display_name: username,
-                    set_photo: reader.result.split(',')[1]
+                    display_name: username ? username : undefined,
+                    set_photo: reader.result ? reader.result.split(',')[1] : undefined
                 }),
-            })
-                .catch((error) => {
-                    $isError.checked = true;
-                    $errorText.innerText = error.message;
-                });
+            }).then((_) => {
+                window.open("/user_info", "_self")
+            }).catch((error) => {
+                $isError.checked = true;
+                $errorText.innerText = error.message;
+            });
+        }
+        if (image === undefined) {
+            f()
+        } else {
+            reader.onloadend = f
         }
     })
 
