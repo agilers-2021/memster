@@ -30,13 +30,13 @@ function loginInit() {
             }),
         })
             .then((response) => {
-                console.log(response);
                 if (response.ok) {
                     let data = response.json();
-                    //localStorage.setItem("token", data["token"])
-                    //window.location.replace("/user_info");
+                    localStorage.setItem("token", data["token"])
+                    window.location.replace("/user_info");
                 } else {
                     response.text().then((text) => {
+                        document.getElementById("password").value = "";
                         $isError.checked = true;
                         $errorText.innerText = text;
                     });

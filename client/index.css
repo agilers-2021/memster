@@ -88,7 +88,7 @@ main {
     box-shadow: 0 0 3px 3px darkgrey;
 }
 
-#is_error:not(checked) ~ .error-message {
+#is_error:not(:checked) ~ .error-message {
     display: none;
 }
 
