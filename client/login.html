@@ -7,6 +7,8 @@
     </head>
     <body onload="loginInit()">
         <main>
+            <label class="unused-label" for="is_error"></label>
+            <input class="error-flag" type="radio" id="is_error">
             <form class="input-form" id="login_form" action="/api/authenticate" method="post">
                 <label class="unused-label" for="username"></label>
                 <label class="unused-label" for="password"></label>
@@ -16,6 +18,9 @@
                 <button class="input-form-button login-button" type="submit" id="login_button">Log in</button>
                 <button class="input-form-button register-button" type="button" id="create_account_button">Create account</button>
             </form>
+            <div class="error-message">
+                <p id="error_text"></p>
+            </div>
         </main>
 
         <script src="index.js"></script>

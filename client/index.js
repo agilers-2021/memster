@@ -6,9 +6,11 @@ function loginInit() {
 
     let $createAccount = document.getElementById("create_account_button");
     let $form = document.getElementById("login_form");
+    let $isError = document.getElementById("is_error");
+    let $errorText = document.getElementById("error_text");
 
     $createAccount.addEventListener("click", function () {
-        window.location.replace("/register");
+        window.location.href = "/register";
     });
     $form.addEventListener("submit", function (e) {
         e.preventDefault();
@@ -27,16 +29,37 @@ function loginInit() {
                 password: password,
             }),
         })
-            .then((response) => response.json())
+            .then((response) => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    response.text()
+                        .then((text) => {
+                            document.getElementById("password").value = "";
+                            $isError.checked = true;
+                            if (text !== "") {
+                                $errorText.innerText = text;
+                            } else {
+                                $errorText.innerText = `Error ${response.status} (${response.statusText})`;
+                            }
+                        });
+                }
+            })
             .then((data) => {
                 localStorage.setItem("token", data["token"])
                 window.location.replace("/user_info");
+            })
+            .catch((error) => {
+                $isError.checked = true;
+                $errorText.innerText = error.message;
             })
     })
 }
 
 function registerInit() {
     let $form = document.getElementById("create_user_form");
+    let $isError = document.getElementById("is_error");
+    let $errorText = document.getElementById("error_text");
 
     $form.addEventListener("submit", function (e) {
         e.preventDefault();
@@ -57,10 +80,28 @@ function registerInit() {
                 password: password,
             }),
         })
-            .then((response) => response.json())
+            .then((response) => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    response.text()
+                        .then((text) => {
+                            $isError.checked = true;
+                            if (text !== "") {
+                                $errorText.innerText = text;
+                            } else {
+                                $errorText.innerText = `Error ${response.status} (${response.statusText})`;
+                            }
+                        });
+                }
+            })
             .then((data) => {
                 localStorage.setItem("token", data["token"])
                 window.location.replace("/user_info");
+            })
+            .catch((error) => {
+                $isError.checked = true;
+                $errorText.innerText = error.message;
             });
     })
 }

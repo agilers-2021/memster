@@ -7,6 +7,8 @@
     </head>
     <body onload="registerInit()">
         <main>
+            <label class="unused-label" for="is_error"></label>
+            <input class="error-flag" type="radio" id="is_error">
             <form class="input-form" id="create_user_form" action="/api/register" method="post">
                 <label class="unused-label" for="username"></label>
                 <label class="unused-label" for="display_name"></label>
@@ -19,6 +21,9 @@
                 <input class="input-field" type="password" id="repeat_password" placeholder="Confirm password"/>
                 <button class="input-form-button register-button" type="submit" id="create_user_button">Create</button>
             </form>
+            <div class="error-message">
+                <p id="error_text"></p>
+            </div>
         </main>
 
         <script src="index.js"></script>
