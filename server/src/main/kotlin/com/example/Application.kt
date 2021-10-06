@@ -6,6 +6,7 @@ import com.example.models.UserObject
 import com.example.plugins.*
 import io.ktor.application.*
 import io.ktor.features.*
+import io.ktor.http.*
 import io.ktor.serialization.*
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -27,6 +28,18 @@ val Application.myRealm: String
 fun Application.module() {
   install(ContentNegotiation) {
     json()
+  }
+  install(CORS) {
+    method(HttpMethod.Options)
+    method(HttpMethod.Put)
+    method(HttpMethod.Delete)
+    method(HttpMethod.Patch)
+    header(HttpHeaders.Authorization)
+    header(HttpHeaders.ContentType)
+    // header("any header") if you want to add any header
+    allowCredentials = true
+    allowNonSimpleContentTypes = true
+    anyHost()
   }
   install(CallLogging)
   DBMaster.connection = Database.connect(

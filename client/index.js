@@ -79,9 +79,12 @@ function userInfoInit() {
     })
         .then((response) => response.json())
         .then((data) => {
+            console.log(data)
             document.title = data["display_name"];
             document.getElementById("display_name").innerText = data["display_name"];
             document.getElementById("username").innerText = data["username"];
+            if (data["current_photo_url"] != null)
+                document.getElementById("profile_image").src = data["current_photo_url"];
         })
         .catch(() => {
             localStorage.removeItem("token");
