@@ -1,6 +1,7 @@
 val ktor_version: String by project
 val kotlin_version: String by project
 val logback_version: String by project
+val jbcrypt_version: String by project
 
 plugins {
   application
@@ -28,4 +29,6 @@ dependencies {
   implementation("io.ktor:ktor-serialization:$ktor_version")
   implementation("org.jetbrains.exposed:exposed:0.17.13")
   implementation("io.ktor:ktor-auth-jwt:$ktor_version")
+  implementation("org.mindrot:jbcrypt:$jbcrypt_version")
+  implementation(kotlin("stdlib"))
 }
