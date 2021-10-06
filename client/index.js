@@ -31,9 +31,7 @@ function loginInit() {
         })
             .then((response) => {
                 if (response.ok) {
-                    let data = response.json();
-                    localStorage.setItem("token", data["token"])
-                    window.location.replace("/user_info");
+                    return response.json();
                 } else {
                     response.text().then((text) => {
                         document.getElementById("password").value = "";
@@ -41,6 +39,10 @@ function loginInit() {
                         $errorText.innerText = text;
                     });
                 }
+            })
+            .then((data) => {
+                localStorage.setItem("token", data["token"])
+                window.location.replace("/user_info");
             })
             .catch((error) => {
                 $isError.checked = true;
