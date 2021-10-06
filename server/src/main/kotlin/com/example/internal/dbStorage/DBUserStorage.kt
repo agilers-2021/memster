@@ -14,6 +14,7 @@ object DBUserStorage: UserStorage {
     val username = varchar("username", length=100)
     val displayName = varchar("display_name", length=100)
     val photoUrl = varchar("photoUrl", length=100).nullable()
+    val anecdote = text("anecdote")
   }
 
   fun init() {
@@ -34,6 +35,7 @@ object DBUserStorage: UserStorage {
       it[username] = user.username
       it[displayName] = user.displayName
       it[photoUrl] = user.photoUrl
+      it[anecdote] = user.anecdote
     }
     return true
   }
@@ -46,13 +48,14 @@ object DBUserStorage: UserStorage {
       it[UserTable.username] = username
       it[displayName] = userObject.displayName
       it[photoUrl] = userObject.photoUrl
+      it[anecdote] = userObject.anecdote
     }
     return nextId - 1
   }
 
   override fun getUserById(id: Int): UserObject? {
     UserTable.select {UserTable.id eq id}.singleOrNull()?.let {
-      return UserObject(it[UserTable.username], it[UserTable.displayName], it[UserTable.photoUrl])
+      return UserObject(it[UserTable.username], it[UserTable.displayName], it[UserTable.photoUrl], it[UserTable.anecdote])
     }
     return null
   }

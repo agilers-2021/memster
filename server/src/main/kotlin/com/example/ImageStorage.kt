@@ -5,5 +5,7 @@ interface ImageStorage {
 
     fun getImage(path: String): ByteArray?
 
+    fun getLink(path: String?): String?
+
     fun deleteImage(path: String)
 }

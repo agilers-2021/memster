@@ -2,14 +2,13 @@ package com.example
 
 import com.example.models.Credentials
 
-enum class PasswordErrorDescription {
-  NO_SUCH_USER,
-  INCORRECT_PASSWORD,
+enum class CredentialsCheckResult {
+  INVALID_CREDENTIALS,
   SUCCESS
 }
 
 interface PasswordStorage {
   fun storeCredentials(credentials: Credentials)
 
-  fun checkCredentials(credentials: Credentials): PasswordErrorDescription
+  fun checkCredentials(credentials: Credentials): CredentialsCheckResult
 }
