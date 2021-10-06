@@ -64,7 +64,8 @@ fun Application.configureRouting() {
 
             when(storage.passwordStorage.checkCredentials(credentials)) {
               CredentialsCheckResult.INVALID_CREDENTIALS -> {
-                error("invalid username or password")
+                call.respondText("Invalid username or password", status = HttpStatusCode.Unauthorized)
+                return@post
               }
               else -> {}
             }
