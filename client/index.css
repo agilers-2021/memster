@@ -30,15 +30,20 @@ main {
     padding: 30px;
 }
 
-.input-form {
-    width: 320px;
+.input-form,
+.profile-box {
     padding: 12px 20px;
 
     display: flex;
-    flex-direction: column;
-    align-items: stretch;
 
     box-shadow: 0 0 3px 3px lightgrey;
+}
+
+.input-form {
+    width: 320px;
+
+    flex-direction: column;
+    align-items: stretch;
 }
 
 .input-field {
