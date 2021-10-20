@@ -11,4 +11,10 @@ interface UserStorage {
   fun putUser(username: String, userObject: UserObject): Int?
 
   fun getUserById(id: Int): UserObject?
+
+  fun getNextMatch(id: Int): UserObject?
+
+  fun addMatch(user1: Int, user2: Int)
+
+  fun addMismatch(user1: Int, user2: Int)
 }

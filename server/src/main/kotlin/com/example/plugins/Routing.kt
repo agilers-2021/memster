@@ -6,6 +6,7 @@ import com.example.*
 import com.example.internal.dbStorage.DBPasswordStorage
 import com.example.internal.dummyRealization.DummyPasswordStorage
 import com.example.internal.dummyRealization.InMemoryImageStorage
+import com.example.internal.dummyRealization.InMemoryUserStorage
 import com.example.models.*
 import com.example.models.Credentials
 import io.ktor.application.*
@@ -21,14 +22,16 @@ import io.ktor.http.content.*
 import io.ktor.util.pipeline.*
 import java.io.File
 import java.nio.file.Files
+import kotlin.collections.HashMap
 
 fun Application.configureRouting() {
 
-//  val storage: UserStorage = InMemoryUserStorage()
+  val storage: UserStorage = InMemoryUserStorage()
 //  val imageStorage: ImageStorage = InMemoryImageStorage(issuer + "api/get_image?path=")
   val imageStorage : ImageStorage = DBMaster.imagesStorage
-  val storage = DBMaster
+//  val storage = DBMaster
   val passwordStorage: PasswordStorage = DummyPasswordStorage()
+  val signsMap: HashMap<String, Pair<String, String>> = HashMap()
 
   routing {
     route("/") {
@@ -69,7 +72,7 @@ fun Application.configureRouting() {
           post {
             val credentials = call.receive<Credentials>()
 
-            when(storage.passwordStorage.checkCredentials(credentials)) {
+            when(passwordStorage.checkCredentials(credentials)) {
               CredentialsCheckResult.INVALID_CREDENTIALS -> {
                 call.respondText("Invalid username or password", status = HttpStatusCode.Unauthorized)
                 return@post
@@ -91,7 +94,7 @@ fun Application.configureRouting() {
           post {
             val request = call.receive<RegisterRequest>()
 
-            storage.passwordStorage.storeCredentials(Credentials(request.username, request.password))
+            passwordStorage.storeCredentials(Credentials(request.username, request.password))
 
             storage.putUser(
               request.username,
@@ -159,6 +162,33 @@ fun Application.configureRouting() {
             val info = storage.getUserById(id) ?: error("user info not found")
             call.respond(UserObject(info.username, info.displayName,
                imageStorage.getLink(info.photoUrl), info.anecdote))
+          }
+
+          route("match") {
+            get {
+              val id = getUserId()
+              val info = storage.getUserById(id) ?: error("user info not found")
+              val nextUser = storage.getNextMatch(id) ?: error("next user not found")
+              val sign = "${info.username}to${nextUser.username}" // TODO: add generation of sign
+              signsMap[sign] = Pair(info.username, nextUser.username)
+              call.respond(MatchResponse(nextUser, sign))
+            }
+
+          }
+
+          route("vote") {
+            post {
+              val id = getUserId()
+              val request = call.receive<VoteRequest>()
+              if (!signsMap.containsKey(request.sign))
+                error("wrong sign")
+              val userId = storage.getUserId(request.user_id) ?: error("wrong user id")
+              if (request.action == "match")
+                storage.addMatch(id, userId)
+              else
+                storage.addMismatch(id, userId)
+              call.respond(HttpStatusCode.OK)
+            }
           }
         }
       }

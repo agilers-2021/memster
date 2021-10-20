@@ -27,3 +27,9 @@ data class RegisterRequest(val username: String, val password: String, val displ
 data class SettingsRequest(val display_name: String? = null, val password: String? = null,
                            val set_photo: String? = null, val delete_photo: Boolean? = null,
                            val anecdote: String? = null)
+
+@Serializable
+data class MatchResponse(val user: UserObject, val sign: String)
+
+@Serializable
+data class VoteRequest(val user_id: String, val sign: String, val action: String)
