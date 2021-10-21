@@ -19,8 +19,7 @@ class ApplicationTest {
       module()
     }) {
       handleRequest(HttpMethod.Get, "/").apply {
-        assertEquals(HttpStatusCode.OK, response.status())
-        assertEquals("Hi, I'm Memster!", response.content)
+        assertEquals(HttpStatusCode.Found, response.status())
       }
     }
   }
