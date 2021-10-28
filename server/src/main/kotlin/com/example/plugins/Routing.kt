@@ -7,22 +7,21 @@ import com.example.internal.dbStorage.DBPasswordStorage
 import com.example.internal.dummyRealization.DummyPasswordStorage
 import com.example.internal.dummyRealization.InMemoryImageStorage
 import com.example.internal.dummyRealization.InMemoryUserStorage
+import com.example.internal.dummyRealization.InMemoryMessageStorage
 import com.example.models.*
-import com.example.models.Credentials
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.auth.jwt.*
 import io.ktor.http.*
-import io.ktor.http.ContentDisposition.Companion.File
+import io.ktor.http.content.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
-import java.util.*
-import io.ktor.http.content.*
 import io.ktor.util.pipeline.*
 import java.io.File
 import java.nio.file.Files
 import kotlin.collections.HashMap
+import java.util.*
 
 fun Application.configureRouting() {
 
@@ -30,8 +29,10 @@ fun Application.configureRouting() {
 //  val imageStorage: ImageStorage = InMemoryImageStorage(issuer + "api/get_image?path=")
   val imageStorage : ImageStorage = DBMaster.imagesStorage
 //  val storage = DBMaster
-  val passwordStorage: PasswordStorage = DummyPasswordStorage()
   val signsMap: HashMap<String, Pair<String, String>> = HashMap()
+  //val storage = DBMaster
+  val passwordStorage: PasswordStorage = DBMaster.passwordStorage
+  val messageStorage: MessageStorage = InMemoryMessageStorage(storage)
 
   routing {
     route("/") {
@@ -43,25 +44,25 @@ fun Application.configureRouting() {
         call.respondRedirect("/login")
       }
 
-      route ("login") {
+      route("login") {
         static {
           default("client/login.html")
         }
       }
 
-      route ("register") {
+      route("register") {
         static {
           default("client/register.html")
         }
       }
 
-      route ("user_info") {
+      route("user_info") {
         static {
           default("client/user_info.html")
         }
       }
 
-      route ("edit") {
+      route("edit") {
         static {
           default("client/edit.html")
         }
@@ -72,7 +73,7 @@ fun Application.configureRouting() {
           post {
             val credentials = call.receive<Credentials>()
 
-            when(passwordStorage.checkCredentials(credentials)) {
+            when (passwordStorage.checkCredentials(credentials)) {
               CredentialsCheckResult.INVALID_CREDENTIALS -> {
                 call.respondText("Invalid username or password", status = HttpStatusCode.Unauthorized)
                 return@post
@@ -104,14 +105,14 @@ fun Application.configureRouting() {
             val token = JWT.create()
               .withAudience(audience)
               .withIssuer(issuer)
-              .withClaim("username",request.username)
+              .withClaim("username", request.username)
               .withExpiresAt(Date(System.currentTimeMillis() + 60000))
               .sign(Algorithm.HMAC256(secret))
             call.respond(TokenResponse(token))
           }
         }
 
-        route("get_image"){
+        route("get_image") {
           get {
             val path = call.parameters["path"]
             if (path == null) {
@@ -158,10 +159,35 @@ fun Application.configureRouting() {
           }
 
           get("user_info") {
-            val id = getUserId()
+            val id = call.request.queryParameters["id"]?.let { storage.getUserId(it) } ?: getUserId()
             val info = storage.getUserById(id) ?: error("user info not found")
-            call.respond(UserObject(info.username, info.displayName,
-               imageStorage.getLink(info.photoUrl), info.anecdote))
+            call.respond(
+              UserObject(
+                info.username, info.displayName,
+                imageStorage.getLink(info.photoUrl), info.anecdote
+              )
+            )
+          }
+
+          get("chats") {
+            val id = getUserId()
+            val chats = messageStorage.getChatsById(id)
+            call.respond(ChatsResponse(chats.map { storage.getUserById(it) ?: error("lol kek") }))
+          }
+
+          get("get_chat") {
+            val id = call.request.queryParameters["id"]?.let {
+              storage.getUserId(it) ?: error("incorrect user id supplied")
+            } ?: error("no user id supplied")
+            val myId = getUserId()
+            val messages = messageStorage.getMessagesForChat(ChatId(myId, id)) ?: emptyList()
+            call.respond(MessagesResponse(messages))
+          }
+
+          post("send_message") {
+            val messageRequest = call.receive<SendMessageRequest>()
+            val id = getUserId()
+            messageStorage.sendMessage(id, messageRequest)
           }
 
           route("match") {

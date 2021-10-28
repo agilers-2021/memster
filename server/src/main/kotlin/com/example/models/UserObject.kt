@@ -33,3 +33,24 @@ data class MatchResponse(val user: UserObject, val sign: String)
 
 @Serializable
 data class VoteRequest(val user_id: String, val sign: String, val action: String)
+
+@Serializable
+data class SendMessageRequest(
+  val receiver: String, val text: String
+)
+
+@Serializable
+data class ChatMessage(
+  val id: Int, val text: String, val datetime: String, val sender: String, val receiver: String
+)
+
+@Serializable
+data class MessagesResponse(
+  val messages: List<ChatMessage>
+)
+
+@Serializable
+data class ChatsResponse(
+  val users: List<UserObject>
+)
+

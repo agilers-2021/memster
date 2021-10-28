@@ -39,7 +39,7 @@ object DBUserStorage: UserStorage {
     return true
   }
 
-  override fun putUser(username: String, userObject: UserObject): Int? {
+  override fun putUser(username: String, userObject: UserObject): Int {
     UserTable.insert {
       it[id] = nextId
       nextId += 1

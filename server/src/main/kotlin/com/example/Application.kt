@@ -11,6 +11,7 @@ import io.ktor.http.*
 import io.ktor.serialization.*
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.time.format.DateTimeFormatter
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
@@ -64,30 +65,30 @@ fun Application.module() {
   configureRouting()
 }
 
-object DBMaster {
+object DBMaster : UserStorage {
 
   lateinit var connection: Database
   lateinit var passwordStorage: PasswordStorage
   lateinit var imagesStorage: ImageStorage
 
-  fun putUser(username: String, userObject: UserObject) =
+  override fun putUser(username: String, userObject: UserObject): Int =
     transaction(connection) {
-      val id = DBUserStorage.putUser(username, userObject)
+      DBUserStorage.putUser(username, userObject)
     }
 
-  fun getUserId(username: String): Int? {
+  override fun getUserId(username: String): Int? {
     return transaction(connection) {
       DBUserStorage.getUserId(username)
     }
   }
 
-  fun getUserById(id: Int):UserObject? {
+  override fun getUserById(id: Int):UserObject? {
     return transaction(connection) {
       DBUserStorage.getUserById(id)
     }
   }
 
-  fun updateUser(id: Int, user: UserObject) {
+  override fun updateUser(id: Int, user: UserObject): Boolean {
     return transaction(connection) {
       DBUserStorage.updateUser(id, user)
     }
