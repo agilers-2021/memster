@@ -3,11 +3,8 @@ package com.example.plugins
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.example.*
-import com.example.internal.dbStorage.DBPasswordStorage
-import com.example.internal.dummyRealization.DummyPasswordStorage
-import com.example.internal.dummyRealization.InMemoryImageStorage
-import com.example.internal.dummyRealization.InMemoryUserStorage
 import com.example.internal.dummyRealization.InMemoryMessageStorage
+import com.example.internal.dummyRealization.InMemoryUserStorage
 import com.example.models.*
 import io.ktor.application.*
 import io.ktor.auth.*
@@ -18,19 +15,15 @@ import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.util.pipeline.*
-import java.io.File
-import java.nio.file.Files
-import kotlin.collections.HashMap
 import java.util.*
 
 fun Application.configureRouting(isTestMode: Boolean) {
 
   val storage: UserStorage = InMemoryUserStorage()
 //  val imageStorage: ImageStorage = InMemoryImageStorage(issuer + "api/get_image?path=")
-  val imageStorage : ImageStorage = DBMaster.imagesStorage
+  val imageStorage: ImageStorage = DBMaster.imagesStorage
 //  val storage = DBMaster
   val signsMap: HashMap<String, Pair<String, String>> = HashMap()
-  //val storage = DBMaster
   val passwordStorage: PasswordStorage = DBMaster.passwordStorage
   val messageStorage: MessageStorage = InMemoryMessageStorage(storage)
 

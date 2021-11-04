@@ -87,6 +87,24 @@ object DBMaster : UserStorage {
     }
   }
 
+  override fun getNextMatch(id: Int): UserObject? {
+    return transaction(connection) {
+      DBUserStorage.getNextMatch(id)
+    }
+  }
+
+  override fun addMatch(user1: Int, user2: Int) {
+    return transaction(connection) {
+      DBUserStorage.addMatch(user1, user2)
+    }
+  }
+
+  override fun addMismatch(user1: Int, user2: Int) {
+    return transaction(connection) {
+      DBUserStorage.addMismatch(user1, user2)
+    }
+  }
+
   override fun updateUser(id: Int, user: UserObject): Boolean {
     return transaction(connection) {
       DBUserStorage.updateUser(id, user)
