@@ -99,11 +99,16 @@ object DBMaster : UserStorage {
     }
   }
 
-  override fun addMismatch(user1: Int, user2: Int) {
+  override fun addUnlike(user1: Int, user2: Int) {
     return transaction(connection) {
-      DBUserStorage.addMismatch(user1, user2)
+      DBUserStorage.addUnlike(user1, user2)
     }
   }
+
+  override fun addLike(user1: Int, user2: Int) {
+    return transaction(connection) {
+      DBUserStorage.addLike(user1, user2)
+    }  }
 
   override fun updateUser(id: Int, user: UserObject): Boolean {
     return transaction(connection) {

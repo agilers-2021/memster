@@ -7,7 +7,7 @@ class InMemoryUserStorage: UserStorage {
   private val usernameToId = hashMapOf<String, Int>()
   private val storage = hashMapOf<Int, UserObject>()
   private val matches = hashMapOf<Int, HashSet<Int>>()
-  private val mismatches = hashMapOf<Int, HashSet<Int>>()
+  private val unlikes = hashMapOf<Int, HashSet<Int>>()
   private val likes = hashMapOf<Int, HashSet<Int>>()
 
   private var nextId = 0
@@ -34,7 +34,7 @@ class InMemoryUserStorage: UserStorage {
 
   override fun getNextMatch(id: Int): UserObject? {
     val matchUserId = storage.keys.filter {newId -> newId != id &&
-            !(mismatches[id]?.contains(newId) ?: false && likes[id]?.contains(newId) ?: false)}.random()
+            !(unlikes[id]?.contains(newId) ?: false && likes[id]?.contains(newId) ?: false)}.random()
     return storage[matchUserId]
   }
 
@@ -47,13 +47,13 @@ class InMemoryUserStorage: UserStorage {
     matches[user2]?.add(user1)
   }
 
-  override fun addMismatch(user1: Int, user2: Int) {
-    if (!mismatches.containsKey(user1))
-      mismatches[user1] = HashSet()
-    if (!mismatches.containsKey(user2))
-      mismatches[user2] = HashSet()
-    mismatches[user1]?.add(user2)
-    mismatches[user2]?.add(user1)
+  override fun addUnlike(user1: Int, user2: Int) {
+    if (!unlikes.containsKey(user1))
+      unlikes[user1] = HashSet()
+    if (!unlikes.containsKey(user2))
+      unlikes[user2] = HashSet()
+    unlikes[user1]?.add(user2)
+    unlikes[user2]?.add(user1)
   }
 
   override fun addLike(user1: Int, user2: Int) {

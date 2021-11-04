@@ -19,10 +19,10 @@ import java.util.*
 
 fun Application.configureRouting(isTestMode: Boolean) {
 
-  val storage: UserStorage = InMemoryUserStorage()
+//  val storage: UserStorage = InMemoryUserStorage()
 //  val imageStorage: ImageStorage = InMemoryImageStorage(issuer + "api/get_image?path=")
   val imageStorage: ImageStorage = DBMaster.imagesStorage
-//  val storage = DBMaster
+  val storage = DBMaster
   val signsMap: HashMap<String, Pair<String, String>> = HashMap()
   val passwordStorage: PasswordStorage = DBMaster.passwordStorage
   val messageStorage: MessageStorage = InMemoryMessageStorage(storage)
@@ -209,7 +209,7 @@ fun Application.configureRouting(isTestMode: Boolean) {
               if (request.action == "match")
                 storage.addLike(id, userId)
               else
-                storage.addMismatch(id, userId)
+                storage.addUnlike(id, userId)
               call.respond(HttpStatusCode.OK)
             }
           }
