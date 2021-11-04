@@ -57,4 +57,16 @@ object DBUserStorage: UserStorage {
     }
     return null
   }
+
+  override fun getNextMatch(id: Int): UserObject? {
+    TODO("Not yet implemented")
+  }
+
+  override fun addMatch(user1: Int, user2: Int) {
+    TODO("Not yet implemented")
+  }
+
+  override fun addMismatch(user1: Int, user2: Int) {
+    TODO("Not yet implemented")
+  }
 }
