@@ -16,7 +16,7 @@ interface UserStorage {
 
   fun addMatch(user1: Int, user2: Int)
 
-  fun addMismatch(user1: Int, user2: Int)
+  fun addUnlike(user1: Int, user2: Int)
 
   fun addLike(user1: Int, user2: Int)
 }

@@ -3,7 +3,8 @@ package com.example.internal.dbStorage
 import org.jetbrains.exposed.sql.*
 import com.example.UserStorage
 import com.example.models.UserObject
-
+import java.lang.Integer.min
+import java.lang.Math.max
 
 object DBUserStorage: UserStorage {
 
@@ -17,8 +18,22 @@ object DBUserStorage: UserStorage {
     val anecdote = text("anecdote")
   }
 
+  object Reactions: Table() {
+    val activeId =  integer("activeId").primaryKey()
+    val passiveId = integer("passiveId").primaryKey()
+    val isLike = bool("isLike")
+  }
+
+
+  object Matches: Table() {
+    val firstId =  integer("firstId").primaryKey()
+    val secondId = integer("secondId").primaryKey()
+  }
+
   fun init() {
     SchemaUtils.create(UserTable)
+    SchemaUtils.create(Reactions)
+    SchemaUtils.create(Matches)
     nextId = UserTable.selectAll().toList().size + 1
   }
 
@@ -59,14 +74,38 @@ object DBUserStorage: UserStorage {
   }
 
   override fun getNextMatch(id: Int): UserObject? {
-    TODO("Not yet implemented")
+    val allReactions = Reactions.select { Reactions.activeId eq id}.map { it[Reactions.passiveId] }.toList()
+    UserTable.selectAll().singleOrNull { it[UserTable.id] != id && !allReactions.contains(it[UserTable.id]) }?.let {
+      return UserObject(it[UserTable.username], it[UserTable.displayName], it[UserTable.photoUrl], it[UserTable.anecdote])
+    }
+    return null
   }
 
   override fun addMatch(user1: Int, user2: Int) {
-    TODO("Not yet implemented")
+    Matches.insert {
+      it[firstId] = min(user1, user2)
+      it[secondId] = max(user1, user2)
+    }
   }
 
-  override fun addMismatch(user1: Int, user2: Int) {
-    TODO("Not yet implemented")
+  override fun addUnlike(user1: Int, user2: Int) {
+    Reactions.insert {
+      it[activeId] = user1
+      it[passiveId] = user2
+      it[isLike] = false
+    }
+  }
+
+  override fun addLike(user1: Int, user2: Int) {
+    Reactions.insert {
+      it[activeId] = user1
+      it[passiveId] = user2
+      it[isLike] = true
+    }
+    Reactions.select {
+      (Reactions.passiveId  eq user1) and (Reactions.activeId eq user1) and
+              Reactions.isLike}.singleOrNull()?.let {
+      addMatch(user1, user2)
+    }
   }
 }
