@@ -184,7 +184,7 @@ fun Application.configureRouting() {
                 error("wrong sign")
               val userId = storage.getUserId(request.user_id) ?: error("wrong user id")
               if (request.action == "match")
-                storage.addMatch(id, userId)
+                storage.addLike(id, userId)
               else
                 storage.addMismatch(id, userId)
               call.respond(HttpStatusCode.OK)
