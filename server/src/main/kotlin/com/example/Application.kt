@@ -11,7 +11,6 @@ import io.ktor.http.*
 import io.ktor.serialization.*
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.transactions.transaction
-import java.time.format.DateTimeFormatter
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
@@ -27,7 +26,7 @@ val Application.audience: String
 val Application.myRealm: String
   get() = environment.config.property("jwt.realm").getString()
 
-fun Application.module() {
+fun Application.module(isTestMode: Boolean = false) {
   install(ContentNegotiation) {
     json()
   }
@@ -62,7 +61,7 @@ fun Application.module() {
   DBMaster.imagesStorage = imagesStorage
 
   configureSecurity()
-  configureRouting()
+  configureRouting(isTestMode)
 }
 
 object DBMaster : UserStorage {

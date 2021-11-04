@@ -23,7 +23,7 @@ import java.nio.file.Files
 import kotlin.collections.HashMap
 import java.util.*
 
-fun Application.configureRouting() {
+fun Application.configureRouting(isTestMode: Boolean) {
 
   val storage: UserStorage = InMemoryUserStorage()
 //  val imageStorage: ImageStorage = InMemoryImageStorage(issuer + "api/get_image?path=")
@@ -128,9 +128,13 @@ fun Application.configureRouting() {
           }
         }
 
-        authenticate("auth-jwt") {
-          val getUserId: PipelineContext<Unit, ApplicationCall>.() -> Int = {
-            val principal = call.principal<JWTPrincipal>()!!
+        val authenticateIfNeeded = if (!isTestMode) { str: String, body: Route.() -> Unit ->
+          authenticate(str) { body() }
+        } else { _, body -> body() }
+
+        authenticateIfNeeded("auth-jwt") {
+          val getUserId: PipelineContext<Unit, ApplicationCall>.() -> Int = lambda@{
+            val principal = call.principal<JWTPrincipal>() ?: if (isTestMode) return@lambda 0 else error("unauthorized")
             val username = principal.payload.getClaim("username").asString()
             val id = storage.getUserId(username) ?: error("no user with specified id found")
             id

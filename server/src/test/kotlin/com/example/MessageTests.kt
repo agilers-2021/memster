@@ -1,12 +1,13 @@
 package com.example
 
+import com.example.models.MessagesResponse
 import io.ktor.config.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
-import kotlin.test.Test
+import org.junit.Test
 import kotlin.test.assertEquals
 
-class ApplicationTest {
+class MessageTests {
   @Test
   fun testRoot() {
     withTestApplication({
@@ -18,8 +19,8 @@ class ApplicationTest {
       }
       module(true)
     }) {
-      handleRequest(HttpMethod.Get, "/").apply {
-        assertEquals(HttpStatusCode.Found, response.status())
+      handleRequest(HttpMethod.Get, "api/chats").apply {
+        assertEquals("{\"users\":[]}", response.content)
       }
     }
   }
