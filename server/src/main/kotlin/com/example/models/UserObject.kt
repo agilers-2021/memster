@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 data class UserObject(
   @SerialName("username") val username: String,
   @SerialName("display_name") val displayName: String,
-  @SerialName("current_photo_url") val photoUrl: String? = null,
+  @SerialName("photo_urls") val photoUrls: List<String> = emptyList(),
   @SerialName("anecdote") val anecdote: String
 )
 
@@ -25,7 +25,7 @@ data class RegisterRequest(val username: String, val password: String, val displ
 
 @Serializable
 data class SettingsRequest(val display_name: String? = null, val password: String? = null,
-                           val set_photo: String? = null, val delete_photo: Boolean? = null,
+                           val set_photo: String? = null, val delete_photo: String? = null,
                            val anecdote: String? = null)
 
 @Serializable

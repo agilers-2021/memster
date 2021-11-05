@@ -185,8 +185,8 @@ function userInfoInit() {
             document.getElementById("display_name").innerText = data["display_name"];
             document.getElementById("username").innerText = data["username"];
             document.getElementById("anecdote").innerText = data["anecdote"];
-            if (data["current_photo_url"] != null)
-                document.getElementById("profile_image").src = data["current_photo_url"];
+            if (data["photo_urls"] != null && data["photo_urls"].length > 0)
+                document.getElementById("profile_image").src = data["photo_urls"][0];
         })
         .catch(() => {
             localStorage.removeItem("token");

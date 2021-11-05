@@ -3,6 +3,7 @@ package com.example.plugins
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.example.*
+import com.example.internal.dummyRealization.InMemoryImageStorage
 import com.example.internal.dummyRealization.InMemoryMessageStorage
 import com.example.internal.dummyRealization.InMemoryUserStorage
 import com.example.models.*
@@ -19,10 +20,10 @@ import java.util.*
 
 fun Application.configureRouting(isTestMode: Boolean) {
 
-//  val storage: UserStorage = InMemoryUserStorage()
-//  val imageStorage: ImageStorage = InMemoryImageStorage(issuer + "api/get_image?path=")
-  val imageStorage: ImageStorage = DBMaster.imagesStorage
-  val storage = DBMaster
+  val storage: UserStorage = InMemoryUserStorage()
+  val imageStorage: ImageStorage = InMemoryImageStorage(issuer + "api/get_image?path=")
+//  val imageStorage: ImageStorage = DBMaster.imagesStorage
+//  val storage = DBMaster
   val signsMap: HashMap<String, Pair<String, String>> = HashMap()
   val passwordStorage: PasswordStorage = DBMaster.passwordStorage
   val messageStorage: MessageStorage = InMemoryMessageStorage(storage)
@@ -92,7 +93,8 @@ fun Application.configureRouting(isTestMode: Boolean) {
 
             storage.putUser(
               request.username,
-              UserObject(request.username, request.display_name ?: request.username, null, "kolobok umer")
+              UserObject(request.username, request.display_name ?: request.username,
+                emptyList(), "kolobok umer")
             )
 
             val token = JWT.create()
@@ -138,18 +140,19 @@ fun Application.configureRouting(isTestMode: Boolean) {
               val id = getUserId()
               val info = storage.getUserById(id) ?: error("user info not found")
               val request = call.receive<SettingsRequest>()
-              var photoUrl = info.photoUrl
+              val photoUrls = info.photoUrls.toMutableList()
               if (request.set_photo != null) {
-                photoUrl = imageStorage.putImage(info.username, Base64.getDecoder().decode(request.set_photo))
+                photoUrls.add(imageStorage.putImage(info.username, Base64.getDecoder().decode(request.set_photo)))
               }
-              if (request.delete_photo == true && info.photoUrl != null) {
-                imageStorage.deleteImage(info.photoUrl)
-                photoUrl = null
+              if (request.delete_photo != null) {
+                imageStorage.deleteImage(request.delete_photo)
+                photoUrls.filter {url -> url != request.delete_photo}
               }
               var anecdote = info.anecdote
               if (request.anecdote != null)
                 anecdote = request.anecdote
-              val newInfo = UserObject(info.username, request.display_name ?: info.displayName, photoUrl, anecdote)
+              val newInfo = UserObject(info.username, request.display_name ?: info.displayName,
+                photoUrls, anecdote)
               storage.updateUser(id, newInfo)
               call.respond(HttpStatusCode.OK)
             }
@@ -161,7 +164,8 @@ fun Application.configureRouting(isTestMode: Boolean) {
             call.respond(
               UserObject(
                 info.username, info.displayName,
-                imageStorage.getLink(info.photoUrl), info.anecdote
+                info.photoUrls.map { url -> imageStorage.getLink(url) ?: ""}.filter { url -> url != "" },
+                info.anecdote
               )
             )
           }

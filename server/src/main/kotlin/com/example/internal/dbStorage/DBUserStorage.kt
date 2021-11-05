@@ -48,7 +48,7 @@ object DBUserStorage: UserStorage {
     UserTable.update({UserTable.id eq id}) {
       it[username] = user.username
       it[displayName] = user.displayName
-      it[photoUrl] = user.photoUrl
+      it[photoUrl] = ""//user.photoUrl TODO change
       it[anecdote] = user.anecdote
     }
     return true
@@ -60,7 +60,7 @@ object DBUserStorage: UserStorage {
       nextId += 1
       it[UserTable.username] = username
       it[displayName] = userObject.displayName
-      it[photoUrl] = userObject.photoUrl
+      it[photoUrl] = "" //userObject.photoUrl TODO change
       it[anecdote] = userObject.anecdote
     }
     return nextId - 1
@@ -68,7 +68,8 @@ object DBUserStorage: UserStorage {
 
   override fun getUserById(id: Int): UserObject? {
     UserTable.select {UserTable.id eq id}.singleOrNull()?.let {
-      return UserObject(it[UserTable.username], it[UserTable.displayName], it[UserTable.photoUrl], it[UserTable.anecdote])
+      return UserObject(it[UserTable.username], it[UserTable.displayName], emptyList(), //it[UserTable.photoUrl] TODO change
+      it[UserTable.anecdote])
     }
     return null
   }
@@ -76,7 +77,8 @@ object DBUserStorage: UserStorage {
   override fun getNextMatch(id: Int): UserObject? {
     val allReactions = Reactions.select { Reactions.activeId eq id}.map { it[Reactions.passiveId] }.toList()
     UserTable.selectAll().singleOrNull { it[UserTable.id] != id && !allReactions.contains(it[UserTable.id]) }?.let {
-      return UserObject(it[UserTable.username], it[UserTable.displayName], it[UserTable.photoUrl], it[UserTable.anecdote])
+      return UserObject(it[UserTable.username], it[UserTable.displayName], emptyList(), //it[UserTable.photoUrl], TODO change
+        it[UserTable.anecdote])
     }
     return null
   }
