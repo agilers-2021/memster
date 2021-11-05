@@ -145,7 +145,7 @@ fun Application.configureRouting(isTestMode: Boolean) {
                 photoUrls.add(imageStorage.putImage(info.username, Base64.getDecoder().decode(request.set_photo)))
               }
               if (request.delete_photo != null) {
-                imageStorage.deleteImage(request.delete_photo)
+                imageStorage.deleteImage(request.delete_photo.replace(issuer + "api/get_image?path=", ""))
                 photoUrls.filter {url -> url != request.delete_photo}
               }
               var anecdote = info.anecdote
