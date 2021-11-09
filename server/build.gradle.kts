@@ -29,6 +29,7 @@ dependencies {
   implementation("io.ktor:ktor-serialization:$ktor_version")
   implementation("org.jetbrains.exposed:exposed:0.17.13")
   implementation("io.ktor:ktor-auth-jwt:$ktor_version")
+  implementation("org.postgresql:postgresql:42.3.1")
   implementation("org.mindrot:jbcrypt:$jbcrypt_version")
   implementation(kotlin("stdlib"))
 }

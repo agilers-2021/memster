@@ -44,8 +44,10 @@ fun Application.module(isTestMode: Boolean = false) {
   }
   install(CallLogging)
   DBMaster.connection = Database.connect(
-    "jdbc:h2:./testdb",
-    driver = "org.h2.Driver"
+    environment.config.property("database.url").getString(),
+    driver = environment.config.property("database.driver").getString(),
+    user = environment.config.propertyOrNull("database.username")?.getString().orEmpty(),
+    password = environment.config.propertyOrNull("database.password")?.getString().orEmpty()
   )
 
   transaction {
