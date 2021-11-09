@@ -1,0 +1,19 @@
+services:
+  server:
+    build: server
+    depends_on:
+      - db
+  db:
+    image: postgres:14-alpine
+    environment:
+      - POSTGRES_USER=memster
+      - POSTGRES_DB=memster
+      - POSTGRES_PASSWORD=memster
+  nginx:
+    build:
+      context: ./
+      dockerfile: ./nginx/Dockerfile
+    ports:
+      - "8080:80"
+    depends_on:
+      - server
