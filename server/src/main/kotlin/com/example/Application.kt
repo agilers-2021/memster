@@ -72,9 +72,9 @@ object DBMaster : UserStorage {
   lateinit var passwordStorage: PasswordStorage
   lateinit var imagesStorage: ImageStorage
 
-  override fun putUser(username: String, userObject: UserObject): Int =
+  override fun putUser(username: String, user: UserObject): Int =
     transaction(connection) {
-      DBUserStorage.putUser(username, userObject)
+      DBUserStorage.putUser(username, user)
     }
 
   override fun getUserId(username: String): Int? {

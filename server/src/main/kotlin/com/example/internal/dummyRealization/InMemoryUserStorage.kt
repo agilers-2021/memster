@@ -21,10 +21,10 @@ class InMemoryUserStorage: UserStorage {
     return true
   }
 
-  override fun putUser(username: String, userObject: UserObject): Int {
+  override fun putUser(username: String, user: UserObject): Int {
     val id = nextId++
     usernameToId[username] = id
-    storage[id] = userObject
+    storage[id] = user
     return id
   }
 
