@@ -20,10 +20,10 @@ import java.util.*
 
 fun Application.configureRouting(isTestMode: Boolean) {
 
-  val storage: UserStorage = InMemoryUserStorage()
-  val imageStorage: ImageStorage = InMemoryImageStorage(issuer + "api/get_image?path=")
-//  val imageStorage: ImageStorage = DBMaster.imagesStorage
-//  val storage = DBMaster
+//  val storage: UserStorage = InMemoryUserStorage()
+//  val imageStorage: ImageStorage = InMemoryImageStorage(issuer + "api/get_image?path=")
+  val imageStorage: ImageStorage = DBMaster.imagesStorage
+  val storage = DBMaster
   val signsMap: HashMap<String, Pair<String, String>> = HashMap()
   val passwordStorage: PasswordStorage = DBMaster.passwordStorage
   val messageStorage: MessageStorage = InMemoryMessageStorage(storage)

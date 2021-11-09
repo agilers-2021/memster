@@ -14,7 +14,7 @@ object DBUserStorage: UserStorage {
     val id = integer("id").primaryKey()
     val username = varchar("username", length=100)
     val displayName = varchar("display_name", length=100)
-    val photoUrl = varchar("photoUrl", length=100).nullable()
+    val photoUrls = varchar("photoUrl", length=100).nullable()
     val anecdote = text("anecdote")
   }
 
@@ -48,27 +48,35 @@ object DBUserStorage: UserStorage {
     UserTable.update({UserTable.id eq id}) {
       it[username] = user.username
       it[displayName] = user.displayName
-      it[photoUrl] = ""//user.photoUrl TODO change
+      if (user.photoUrls.isEmpty()) {
+        it[photoUrls] = null
+      } else {
+        it[photoUrls] = user.photoUrls.joinToString(separator = " ")
+      }
       it[anecdote] = user.anecdote
     }
     return true
   }
 
-  override fun putUser(username: String, userObject: UserObject): Int {
+  override fun putUser(username: String, user: UserObject): Int {
     UserTable.insert {
       it[id] = nextId
       nextId += 1
       it[UserTable.username] = username
-      it[displayName] = userObject.displayName
-      it[photoUrl] = "" //userObject.photoUrl TODO change
-      it[anecdote] = userObject.anecdote
+      it[displayName] = user.displayName
+      if (user.photoUrls.isEmpty()) {
+        it[photoUrls] = null
+      } else {
+        it[photoUrls] = user.photoUrls.joinToString(separator = " ")
+      }
+      it[anecdote] = user.anecdote
     }
     return nextId - 1
   }
 
   override fun getUserById(id: Int): UserObject? {
     UserTable.select {UserTable.id eq id}.singleOrNull()?.let {
-      return UserObject(it[UserTable.username], it[UserTable.displayName], emptyList(), //it[UserTable.photoUrl] TODO change
+      return UserObject(it[UserTable.username], it[UserTable.displayName], it[UserTable.photoUrls]?.split(" ") ?: run { emptyList()},
       it[UserTable.anecdote])
     }
     return null
@@ -77,7 +85,7 @@ object DBUserStorage: UserStorage {
   override fun getNextMatch(id: Int): UserObject? {
     val allReactions = Reactions.select { Reactions.activeId eq id}.map { it[Reactions.passiveId] }.toList()
     UserTable.selectAll().singleOrNull { it[UserTable.id] != id && !allReactions.contains(it[UserTable.id]) }?.let {
-      return UserObject(it[UserTable.username], it[UserTable.displayName], emptyList(), //it[UserTable.photoUrl], TODO change
+      return UserObject(it[UserTable.username], it[UserTable.displayName], it[UserTable.photoUrls]?.split(" ") ?: run { emptyList()},
         it[UserTable.anecdote])
     }
     return null

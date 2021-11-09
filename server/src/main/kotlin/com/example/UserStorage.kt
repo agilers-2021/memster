@@ -8,7 +8,7 @@ interface UserStorage {
 
   fun updateUser(id: Int, user: UserObject): Boolean
 
-  fun putUser(username: String, userObject: UserObject): Int?
+  fun putUser(username: String, user: UserObject): Int?
 
   fun getUserById(id: Int): UserObject?
 
