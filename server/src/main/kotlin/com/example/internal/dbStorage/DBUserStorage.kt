@@ -84,8 +84,8 @@ object DBUserStorage: UserStorage {
 
   override fun getNextMatch(id: Int): UserObject? {
     val allReactions = Reactions.select { Reactions.activeId eq id}.map { it[Reactions.passiveId] }.toList()
-    UserTable.selectAll().singleOrNull { it[UserTable.id] != id && !allReactions.contains(it[UserTable.id]) }?.let {
-      return UserObject(it[UserTable.username], it[UserTable.displayName], it[UserTable.photoUrls]?.split(" ") ?: run { emptyList()},
+    UserTable.selectAll().firstOrNull { it[UserTable.id] != id && !allReactions.contains(it[UserTable.id]) }?.let {
+      return@getNextMatch UserObject(it[UserTable.username], it[UserTable.displayName], it[UserTable.photoUrls]?.split(" ") ?: run { emptyList()},
         it[UserTable.anecdote])
     }
     return null

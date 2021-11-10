@@ -32,7 +32,7 @@ data class SettingsRequest(val display_name: String? = null, val password: Strin
 data class MatchResponse(val user: UserObject, val sign: String)
 
 @Serializable
-data class VoteRequest(val user_id: String, val sign: String, val action: String)
+data class VoteRequest(val sign: String, val action: String)
 
 @Serializable
 data class SendMessageRequest(
