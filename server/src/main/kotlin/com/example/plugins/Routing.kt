@@ -204,7 +204,11 @@ fun Application.configureRouting(isTestMode: Boolean) {
               val nextUser = storage.getNextMatch(id) ?: error("next user not found")
               val sign = "${info.username}to${nextUser.username}" // TODO: add generation of sign
               signsMap[sign] = Pair(info.username, nextUser.username)
-              call.respond(MatchResponse(nextUser, sign))
+              call.respond(MatchResponse(UserObject(
+                nextUser.username, nextUser.displayName,
+                nextUser.photoUrls.map { url -> imageStorage.getLink(url) ?: ""}.filter { url -> url != "" },
+                nextUser.anecdote
+              ), sign))
             }
 
           }
