@@ -2,10 +2,11 @@
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <title>User</title>
+        <title>Feed</title>
+        <link rel="stylesheet" href="https://emoji-css.afeld.me/emoji.css">
         <link rel="stylesheet" href="./index.css">
     </head>
-    <body onload="userInfoInit()">
+    <body onload="feedInit()">
         <nav>
             <button class="nav-button logout-button" type="button" id="logout_button" onclick="logout()">Log out</button>
             <button class="nav-button edit-button" type="button" id="edit_button" onclick="edit()">Edit</button>
@@ -14,6 +15,18 @@
             <button class="nav-button user-button" type="button" id="user_button" onclick="openUserInfo()">Me</button>
         </nav>
         <main>
+            <div class="vote-buttons">
+                <button class="vote-button dislike-button" onclick="onDislike()">
+                    <span class="emoji-wrapper">
+                        <span class="em-svg em-x"></span>
+                    </span>
+                </button>
+                <button class="vote-button like-button" onclick="onLike()">
+                    <span class="emoji-wrapper">
+                        <span class="em-svg em-hearts"></span>
+                    </span>
+                </button>
+            </div>
             <div class="profile-box">
                 <div class="profile-content">
                     <img id="profile_image" class="profile-picture" src="images/default-profile-picture.png" alt="profile picture">

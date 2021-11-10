@@ -62,6 +62,12 @@ fun Application.configureRouting(isTestMode: Boolean) {
         }
       }
 
+      route("feed") {
+        static {
+          default("client/feed.html")
+        }
+      }
+
       route("api") {
         route("authenticate") {
           post {
@@ -209,7 +215,7 @@ fun Application.configureRouting(isTestMode: Boolean) {
               val request = call.receive<VoteRequest>()
               if (!signsMap.containsKey(request.sign))
                 error("wrong sign")
-              val userId = storage.getUserId(request.user_id) ?: error("wrong user id")
+              val userId = storage.getUserId(signsMap.getValue(request.sign).second) ?: error("user not found")
               if (request.action == "match")
                 storage.addLike(id, userId)
               else

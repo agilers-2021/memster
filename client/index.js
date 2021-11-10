@@ -167,6 +167,27 @@ function registerInit() {
     })
 }
 
+function logout() {
+    localStorage.removeItem("token");
+    window.location.replace("/login");
+}
+
+function edit() {
+    window.open("/edit", "_self");
+}
+
+function openChats() {
+    window.open("/chats", "_self");
+}
+
+function openFeed() {
+    window.open("/feed", "_self");
+}
+
+function openUserInfo() {
+    window.open("/user_info", "_self");
+}
+
 function userInfoInit() {
     let token = localStorage.getItem("token");
     if (token === null) {
@@ -192,15 +213,66 @@ function userInfoInit() {
             localStorage.removeItem("token");
             window.location.replace("/login");
         })
+}
 
-    let $logout = document.getElementById("logout_button");
-    $logout.addEventListener("click", function () {
-        localStorage.removeItem("token");
+function feedInit() {
+    let token = localStorage.getItem("token");
+    if (token === null) {
         window.location.replace("/login");
-    })
+    }
 
-    let $edit = document.getElementById("edit_button");
-    $edit.addEventListener("click", function () {
-        window.open("/edit", "_self");
+    getNextMatch(token);
+}
+
+function getNextMatch(token) {
+    fetch("/api/match", {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        },
     })
+        .then((response) => response.json())
+        .then((data) => {
+            let user = data["user"];
+            document.getElementById("display_name").innerText = user["display_name"];
+            document.getElementById("username").innerText = user["username"];
+            document.getElementById("anecdote").innerText = user["anecdote"];
+            if (user["photo_urls"] != null && user["photo_urls"].length > 0)
+                document.getElementById("profile_image").src = user["photo_urls"][0];
+            sessionStorage.setItem("nextMatchSign", data["sign"]);
+        })
+        .catch((_) => {
+            openUserInfo()
+        })
+}
+
+function vote(value) {
+    let token = localStorage.getItem("token");
+    if (token === null) {
+        window.location.replace("/login");
+    }
+
+    fetch("/api/vote", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+            sign: sessionStorage.getItem("nextMatchSign"),
+            action: value,
+        }),
+    })
+        .then((_) => {
+            sessionStorage.removeItem("nextMatchSign")
+            window.location.replace("/feed");
+        })
+}
+
+function onLike() {
+    vote("match");
+}
+
+function onDislike() {
+    vote("ignore");
 }
