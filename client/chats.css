@@ -1,0 +1,5 @@
+main {
+    height: calc(100% - 122px);
+
+    align-items: stretch;
+}

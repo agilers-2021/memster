@@ -276,3 +276,134 @@ function onLike() {
 function onDislike() {
     vote("ignore");
 }
+
+function removeAllChildNodes(parent) {
+    while (parent.firstChild) {
+        parent.removeChild(parent.firstChild);
+    }
+}
+
+function chatsInit() {
+    let token = localStorage.getItem("token");
+    if (token === null) {
+        window.location.replace("/login");
+    }
+
+    let $chatList = document.getElementById("chat_list");
+
+    setInterval(() => {
+        updateChat(token)
+    }, 500)
+
+    fetch("/api/chats", {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        },
+    })
+        .then((response) => response.json())
+        .then((data) => {
+            Array.from(data["users"]).forEach(function (entry) {
+                let button = document.createElement("button");
+                button.className = "chat";
+                let username = entry["username"];
+                button.name = username;
+                button.appendChild(document.createTextNode(entry["display_name"]));
+                button.addEventListener("click", function () {
+                    sessionStorage.setItem("currentDialogue", username);
+                    updateChat(token);
+                });
+                $chatList.appendChild(button);
+            })
+        })
+
+    let $form = document.getElementById("message_form");
+    let $message_input = document.getElementById("message_input");
+
+    $form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        let messageText = $message_input.value;
+        $message_input.value = "";
+        let username = sessionStorage.getItem("currentDialogue");
+        if (username !== null) {
+            fetch("/api/send_message", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    receiver: username,
+                    text: messageText,
+                })
+            })
+                .then((_) => {
+                    updateChat(token);
+                });
+        }
+    });
+}
+
+function updateChat(token) {
+    let $messageList = document.getElementById("message_list");
+
+    let username = sessionStorage.getItem("currentDialogue");
+
+    let $chatList = document.getElementById("chat_list");
+
+    if (username === null) {
+        removeAllChildNodes($messageList);
+        Array.from($chatList.children).forEach((entry) => {
+           entry.style.fontWeight = "normal";
+        });
+    } else {
+        fetch(`/api/get_chat?id=${username}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                removeAllChildNodes($messageList);
+
+                Array.from($chatList.children).forEach((entry) => {
+                    if (entry.name === username) {
+                        entry.style.fontWeight = "bold";
+                    } else {
+                        entry.style.fontWeight = "normal";
+                    }
+                });
+
+                Array.from(data["messages"]).forEach(function (entry) {
+                    let senderName = document.createElement("span");
+                    senderName.className = "sender-name";
+                    senderName.appendChild(document.createTextNode(entry["sender"]));
+
+                    let datetime = document.createElement("span");
+                    datetime.className = "datetime";
+                    datetime.appendChild(document.createTextNode(" " + entry["datetime"]));
+
+                    let messageHeader = document.createElement("div");
+                    messageHeader.className = "message-header";
+                    messageHeader.appendChild(senderName);
+                    messageHeader.appendChild(datetime);
+
+                    let messageText = document.createElement("div");
+                    messageText.className = "message-text";
+                    messageText.appendChild(document.createTextNode(entry["text"]));
+
+                    let message = document.createElement("div");
+                    message.className = "message";
+                    message.appendChild(messageHeader);
+                    message.appendChild(messageText);
+
+                    if (entry["receiver"] === username) {
+                        message.className += " my-message";
+                    }
+
+                    $messageList.appendChild(message);
+                })
+            })
+    }
+}

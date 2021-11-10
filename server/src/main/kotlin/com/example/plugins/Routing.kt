@@ -68,6 +68,12 @@ fun Application.configureRouting(isTestMode: Boolean) {
         }
       }
 
+      route("chats") {
+        static {
+          default("client/chats.html")
+        }
+      }
+
       route("api") {
         route("authenticate") {
           post {
@@ -195,6 +201,7 @@ fun Application.configureRouting(isTestMode: Boolean) {
             val messageRequest = call.receive<SendMessageRequest>()
             val id = getUserId()
             messageStorage.sendMessage(id, messageRequest)
+            call.respond(HttpStatusCode.OK)
           }
 
           route("match") {

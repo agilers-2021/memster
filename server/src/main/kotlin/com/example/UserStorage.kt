@@ -19,4 +19,6 @@ interface UserStorage {
   fun addUnlike(user1: Int, user2: Int)
 
   fun addLike(user1: Int, user2: Int)
+
+  fun getChatIds(id: Int): List<Int>
 }

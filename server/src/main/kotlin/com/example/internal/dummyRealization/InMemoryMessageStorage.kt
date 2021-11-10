@@ -11,6 +11,11 @@ class InMemoryMessageStorage(private val userStorage: UserStorage) : MessageStor
   var nextId = 0;
 
   override fun getChatsById(id: Int): List<Int> {
+    // FIXME?
+    userStorage.getChatIds(id).map { Participants(id, it) }.forEach {
+      storage.putIfAbsent(it, arrayListOf())
+    }
+
     val result = mutableListOf<Int>()
     for ((participants, _) in storage) {
       if (id == participants.first) {

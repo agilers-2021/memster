@@ -118,4 +118,10 @@ object DBUserStorage: UserStorage {
       addMatch(user1, user2)
     }
   }
+
+  override fun getChatIds(id: Int): List<Int> {
+    val activeLikes = Reactions.select { Reactions.activeId eq id }.filter { it[Reactions.isLike] }.map { it[Reactions.passiveId] }.toSet()
+    val passiveLikes = Reactions.select { Reactions.passiveId eq id }.filter { it[Reactions.isLike] }.map { it[Reactions.activeId] }.toSet()
+    return (activeLikes intersect passiveLikes).sorted()
+  }
 }

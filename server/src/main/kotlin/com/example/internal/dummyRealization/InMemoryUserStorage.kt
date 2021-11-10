@@ -63,4 +63,6 @@ class InMemoryUserStorage: UserStorage {
     if (likes.containsKey(user2) && likes[user2]?.contains(user1) == true)
       addMatch(user1, user2)
   }
+  // FIXME
+  override fun getChatIds(id: Int): List<Int> = emptyList()
 }

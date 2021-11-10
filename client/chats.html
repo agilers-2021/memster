@@ -4,8 +4,9 @@
         <meta charset="utf-8" />
         <title>User</title>
         <link rel="stylesheet" href="./index.css">
+        <link rel="stylesheet" href="./chats.css">
     </head>
-    <body onload="userInfoInit()">
+    <body onload="chatsInit()">
         <nav>
             <button class="nav-button logout-button" type="button" onclick="logout()">Log out</button>
             <button class="nav-button edit-button" type="button" onclick="edit()">Edit</button>
@@ -14,14 +15,16 @@
             <button class="nav-button user-button" type="button" onclick="openUserInfo()">Me</button>
         </nav>
         <main>
-            <div class="profile-box">
-                <div class="profile-content">
-                    <img id="profile_image" class="profile-picture" src="images/default-profile-picture.png" alt="profile picture">
-                    <div class="long-text-box"><span class="long-text" id="anecdote">...</span></div>
+            <div class="chats-box">
+                <div class="chat-list" id="chat_list">
                 </div>
-                <div class="user-info" style="float: left">
-                    <div class="user-info-item user-title"><span id="display_name">...</span></div>
-                    <div class="user-info-item"><span class="username" id="username">...</span></div>
+                <div class="messages">
+                    <div class="message-list" id="message_list">
+                    </div>
+                    <form class="message-form" id="message_form">
+                        <label class="unused-label" for="message_input"></label>
+                        <input class="message-input" id="message_input" type="text" autocomplete="off"/>
+                    </form>
                 </div>
             </div>
         </main>

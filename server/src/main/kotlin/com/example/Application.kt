@@ -110,7 +110,14 @@ object DBMaster : UserStorage {
   override fun addLike(user1: Int, user2: Int) {
     return transaction(connection) {
       DBUserStorage.addLike(user1, user2)
-    }  }
+    }
+  }
+
+  override fun getChatIds(id: Int): List<Int> {
+    return transaction(connection) {
+      DBUserStorage.getChatIds(id)
+    }
+  }
 
   override fun updateUser(id: Int, user: UserObject): Boolean {
     return transaction(connection) {
