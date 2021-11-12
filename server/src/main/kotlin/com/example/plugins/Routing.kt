@@ -23,10 +23,11 @@ fun Application.configureRouting(isTestMode: Boolean) {
 //  val storage: UserStorage = InMemoryUserStorage()
 //  val imageStorage: ImageStorage = InMemoryImageStorage(issuer + "api/get_image?path=")
   val imageStorage: ImageStorage = DBMaster.imagesStorage
-  val storage = DBMaster
+  val userStorage: UserStorage = DBMaster.userStorage
   val signsMap: HashMap<String, Pair<String, String>> = HashMap()
   val passwordStorage: PasswordStorage = DBMaster.passwordStorage
-  val messageStorage: MessageStorage = InMemoryMessageStorage(storage)
+//  val messageStorage: MessageStorage = DBMaster.messageStorage
+  val messageStorage: InMemoryMessageStorage = InMemoryMessageStorage(userStorage)
 
   routing {
     route("/") {
@@ -103,7 +104,7 @@ fun Application.configureRouting(isTestMode: Boolean) {
 
             passwordStorage.storeCredentials(Credentials(request.username, request.password))
 
-            storage.putUser(
+            userStorage.putUser(
               request.username,
               UserObject(request.username, request.display_name ?: request.username,
                 emptyList(), "kolobok umer")
@@ -143,14 +144,14 @@ fun Application.configureRouting(isTestMode: Boolean) {
           val getUserId: PipelineContext<Unit, ApplicationCall>.() -> Int = lambda@{
             val principal = call.principal<JWTPrincipal>() ?: if (isTestMode) return@lambda 0 else error("unauthorized")
             val username = principal.payload.getClaim("username").asString()
-            val id = storage.getUserId(username) ?: error("no user with specified id found")
+            val id = userStorage.getUserId(username) ?: error("no user with specified id found")
             id
           }
 
           route("settings") {
             post {
               val id = getUserId()
-              val info = storage.getUserById(id) ?: error("user info not found")
+              val info = userStorage.getUserById(id) ?: error("user info not found")
               val request = call.receive<SettingsRequest>()
               val photoUrls = info.photoUrls.toMutableList()
               if (request.set_photo != null) {
@@ -165,14 +166,14 @@ fun Application.configureRouting(isTestMode: Boolean) {
                 anecdote = request.anecdote
               val newInfo = UserObject(info.username, request.display_name ?: info.displayName,
                 photoUrls, anecdote)
-              storage.updateUser(id, newInfo)
+              userStorage.updateUser(id, newInfo)
               call.respond(HttpStatusCode.OK)
             }
           }
 
           get("user_info") {
-            val id = call.request.queryParameters["id"]?.let { storage.getUserId(it) } ?: getUserId()
-            val info = storage.getUserById(id) ?: error("user info not found")
+            val id = call.request.queryParameters["id"]?.let { userStorage.getUserId(it) } ?: getUserId()
+            val info = userStorage.getUserById(id) ?: error("user info not found")
             call.respond(
               UserObject(
                 info.username, info.displayName,
@@ -185,12 +186,12 @@ fun Application.configureRouting(isTestMode: Boolean) {
           get("chats") {
             val id = getUserId()
             val chats = messageStorage.getChatsById(id)
-            call.respond(ChatsResponse(chats.map { storage.getUserById(it) ?: error("lol kek") }))
+            call.respond(ChatsResponse(chats.map { userStorage.getUserById(it) ?: error("lol kek") }))
           }
 
           get("get_chat") {
             val id = call.request.queryParameters["id"]?.let {
-              storage.getUserId(it) ?: error("incorrect user id supplied")
+              userStorage.getUserId(it) ?: error("incorrect user id supplied")
             } ?: error("no user id supplied")
             val myId = getUserId()
             val messages = messageStorage.getMessagesForChat(ChatId(myId, id)) ?: emptyList()
@@ -207,8 +208,8 @@ fun Application.configureRouting(isTestMode: Boolean) {
           route("match") {
             get {
               val id = getUserId()
-              val info = storage.getUserById(id) ?: error("user info not found")
-              val nextUser = storage.getNextMatch(id) ?: error("next user not found")
+              val info = userStorage.getUserById(id) ?: error("user info not found")
+              val nextUser = userStorage.getNextMatch(id) ?: error("next user not found")
               val sign = "${info.username}to${nextUser.username}" // TODO: add generation of sign
               signsMap[sign] = Pair(info.username, nextUser.username)
               call.respond(MatchResponse(UserObject(
@@ -226,11 +227,11 @@ fun Application.configureRouting(isTestMode: Boolean) {
               val request = call.receive<VoteRequest>()
               if (!signsMap.containsKey(request.sign))
                 error("wrong sign")
-              val userId = storage.getUserId(signsMap.getValue(request.sign).second) ?: error("user not found")
+              val userId = userStorage.getUserId(signsMap.getValue(request.sign).second) ?: error("user not found")
               if (request.action == "match")
-                storage.addLike(id, userId)
+                userStorage.addLike(id, userId)
               else
-                storage.addUnlike(id, userId)
+                userStorage.addUnlike(id, userId)
               call.respond(HttpStatusCode.OK)
             }
           }

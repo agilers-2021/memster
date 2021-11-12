@@ -1,6 +1,7 @@
 package com.example
 
 import com.example.internal.dbStorage.DBImageStorage
+import com.example.internal.dbStorage.DBMessageStorage
 import com.example.internal.dbStorage.DBPasswordStorage
 import com.example.internal.dbStorage.DBUserStorage
 import com.example.models.UserObject
@@ -50,13 +51,20 @@ fun Application.module(isTestMode: Boolean = false) {
     password = environment.config.propertyOrNull("database.password")?.getString().orEmpty()
   )
 
-  transaction {
-    DBUserStorage.init()
-  }
+
+
+  val userStorage = DBUserStorage(DBMaster.connection)
+  userStorage.init()
+  DBMaster.userStorage = userStorage
 
   val passwordStorage = DBPasswordStorage(DBMaster.connection)
   passwordStorage.init()
   DBMaster.passwordStorage = passwordStorage
+
+  val messageStorage = DBMessageStorage(DBMaster.connection)
+  messageStorage.init()
+  DBMaster.messageStorage = messageStorage
+
 
   val imagesStorage = DBImageStorage(DBMaster.connection, issuer + "api/get_image?path=")
   imagesStorage.init()
@@ -66,62 +74,12 @@ fun Application.module(isTestMode: Boolean = false) {
   configureRouting(isTestMode)
 }
 
-object DBMaster : UserStorage {
+object DBMaster {
 
   lateinit var connection: Database
   lateinit var passwordStorage: PasswordStorage
   lateinit var imagesStorage: ImageStorage
+  lateinit var messageStorage: MessageStorage
+  lateinit var userStorage: UserStorage
 
-  override fun putUser(username: String, user: UserObject): Int =
-    transaction(connection) {
-      DBUserStorage.putUser(username, user)
-    }
-
-  override fun getUserId(username: String): Int? {
-    return transaction(connection) {
-      DBUserStorage.getUserId(username)
-    }
-  }
-
-  override fun getUserById(id: Int):UserObject? {
-    return transaction(connection) {
-      DBUserStorage.getUserById(id)
-    }
-  }
-
-  override fun getNextMatch(id: Int): UserObject? {
-    return transaction(connection) {
-      DBUserStorage.getNextMatch(id)
-    }
-  }
-
-  override fun addMatch(user1: Int, user2: Int) {
-    return transaction(connection) {
-      DBUserStorage.addMatch(user1, user2)
-    }
-  }
-
-  override fun addUnlike(user1: Int, user2: Int) {
-    return transaction(connection) {
-      DBUserStorage.addUnlike(user1, user2)
-    }
-  }
-
-  override fun addLike(user1: Int, user2: Int) {
-    return transaction(connection) {
-      DBUserStorage.addLike(user1, user2)
-    }
-  }
-
-  override fun getChatIds(id: Int): List<Int> {
-    return transaction(connection) {
-      DBUserStorage.getChatIds(id)
-    }
-  }
-
-  override fun updateUser(id: Int, user: UserObject): Boolean {
-    return transaction(connection) {
-      DBUserStorage.updateUser(id, user)
-    }
-  }
 }
