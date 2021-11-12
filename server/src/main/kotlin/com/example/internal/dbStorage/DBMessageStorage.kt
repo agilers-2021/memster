@@ -25,13 +25,7 @@ class DBMessageStorage(val connection: Database) : MessageStorage {
     }
 
     override fun getChatsById(id: Int): List<Int> {
-        println(id)
-        return transaction(connection) {
-            MessageTable.select { (MessageTable.senderId eq id) or (MessageTable.receiverId eq id)}.map {
-                // return one of two possible ids which is not id
-                it[MessageTable.senderId] + it[MessageTable.receiverId] - id
-            }
-        }
+        return DBMaster.userStorage.getChatIds(id)
     }
 
     override fun getMessagesForChat(chatId: ChatId): List<ChatMessage> {
