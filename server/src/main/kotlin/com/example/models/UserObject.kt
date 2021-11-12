@@ -41,7 +41,7 @@ data class SendMessageRequest(
 
 @Serializable
 data class ChatMessage(
-  val id: Int, val text: String, val datetime: String, val sender: String, val receiver: String
+  val id: Int, val text: String, val datetime: String, val sender: Int, val receiver: Int
 )
 
 @Serializable

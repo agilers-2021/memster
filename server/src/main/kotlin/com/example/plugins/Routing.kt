@@ -26,8 +26,8 @@ fun Application.configureRouting(isTestMode: Boolean) {
   val userStorage: UserStorage = DBMaster.userStorage
   val signsMap: HashMap<String, Pair<String, String>> = HashMap()
   val passwordStorage: PasswordStorage = DBMaster.passwordStorage
-//  val messageStorage: MessageStorage = DBMaster.messageStorage
-  val messageStorage: InMemoryMessageStorage = InMemoryMessageStorage(userStorage)
+  val messageStorage: MessageStorage = DBMaster.messageStorage
+//  val messageStorage: InMemoryMessageStorage = InMemoryMessageStorage(userStorage)
 
   routing {
     route("/") {

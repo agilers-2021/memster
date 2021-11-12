@@ -41,8 +41,8 @@ class InMemoryMessageStorage(private val userStorage: UserStorage) : MessageStor
         nextId,
         message.text,
         FORMATTER.format(Date(System.currentTimeMillis())),
-        senderName,
-        message.receiver
+        senderId,
+        receiverId
       )
     )
     nextId++
