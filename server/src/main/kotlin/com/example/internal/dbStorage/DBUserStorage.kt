@@ -12,7 +12,7 @@ class DBUserStorage(val connection: Database): UserStorage {
   private var nextId = 1
 
   object UserTable : Table() {
-    val id = integer("id").primaryKey()
+    val id = integer("id").primaryKey().autoIncrement()
     val username = varchar("username", length=100)
     val displayName = varchar("display_name", length=100)
     val photoUrls = varchar("photoUrl", length=100).nullable()
@@ -68,8 +68,6 @@ class DBUserStorage(val connection: Database): UserStorage {
   override fun putUser(username: String, user: UserObject): Int {
     return transaction(connection) {
       UserTable.insert {
-        it[id] = nextId
-        nextId += 1
         it[UserTable.username] = username
         it[displayName] = user.displayName
         if (user.photoUrls.isEmpty()) {
