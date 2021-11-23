@@ -335,6 +335,7 @@ function chatsInit() {
                 body: JSON.stringify({
                     receiver: username,
                     text: messageText,
+                    image: null
                 })
             })
                 .then((_) => {

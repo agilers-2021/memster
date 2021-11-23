@@ -1,9 +1,9 @@
 package com.example
 
 interface ImageStorage {
-    fun putImage(username: String, image: ByteArray): String
+    fun putImage(image: ByteArray): Int
 
-    fun getImage(path: String): ByteArray?
+    fun getImage(id: Int): ByteArray?
 
     fun getLink(path: String?): String?
 
