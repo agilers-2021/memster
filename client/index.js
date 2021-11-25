@@ -319,13 +319,22 @@ function chatsInit() {
 
     let $form = document.getElementById("message_form");
     let $message_input = document.getElementById("message_input");
+    let $image_input = document.getElementById("image_input");
 
     $form.addEventListener("submit", async (e) => {
         e.preventDefault();
+
+        const reader = new FileReader();
+
         let messageText = $message_input.value;
+        let image = $image_input.files[0];
         $message_input.value = "";
+        $image_input.value = "";
         let username = sessionStorage.getItem("currentDialogue");
-        if (username !== null) {
+
+        if (image)
+            reader.readAsDataURL(image)
+        let f = function () {
             fetch("/api/send_message", {
                 method: 'POST',
                 headers: {
@@ -335,12 +344,20 @@ function chatsInit() {
                 body: JSON.stringify({
                     receiver: username,
                     text: messageText,
-                    image: null
+                    image: reader.result ? reader.result.split(',')[1] : undefined
                 })
             })
                 .then((_) => {
                     updateChat(token);
                 });
+        }
+
+        if (username !== null) {
+            if (image === undefined) {
+                f()
+            } else {
+                reader.onloadend = f
+            }
         }
     });
 }
@@ -383,7 +400,7 @@ function updateChat(token) {
 
                     let datetime = document.createElement("span");
                     datetime.className = "datetime";
-                    datetime.appendChild(document.createTextNode(" " + entry["datetime"]));
+                    datetime.appendChild(document.createTextNode(" " + new Date(entry["datetime"]).toLocaleString()));
 
                     let messageHeader = document.createElement("div");
                     messageHeader.className = "message-header";
@@ -394,10 +411,19 @@ function updateChat(token) {
                     messageText.className = "message-text";
                     messageText.appendChild(document.createTextNode(entry["text"]));
 
+                    let image = document.createElement("img");
+                    let imageId = entry["imageId"];
+                    if (imageId !== null) {
+                        image.src = `/api/get_image?id=${imageId}`;
+                    }
+
                     let message = document.createElement("div");
                     message.className = "message";
                     message.appendChild(messageHeader);
                     message.appendChild(messageText);
+                    if (imageId !== null) {
+                        message.appendChild(image);
+                    }
 
                     if (entry["receiver"] === username) {
                         message.className += " my-message";
