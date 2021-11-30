@@ -466,6 +466,7 @@ function updateChat(token) {
                     messageText.appendChild(document.createTextNode(entry["text"]));
 
                     let image = document.createElement("img");
+                    image.className = "chat-image";
                     let imageId = entry["imageId"];
                     if (imageId !== null) {
                         image.src = `/api/get_image?id=${imageId}`;

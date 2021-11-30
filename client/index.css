@@ -302,3 +302,7 @@ button {
 .message-form {
     display: contents;
 }
+
+.chat-image {
+    max-width: 100%;
+}
