@@ -3,9 +3,6 @@ package com.example.plugins
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.example.*
-import com.example.internal.dummyRealization.InMemoryImageStorage
-import com.example.internal.dummyRealization.InMemoryMessageStorage
-import com.example.internal.dummyRealization.InMemoryUserStorage
 import com.example.models.*
 import io.ktor.application.*
 import io.ktor.auth.*
@@ -153,19 +150,21 @@ fun Application.configureRouting(isTestMode: Boolean) {
               val id = getUserId()
               val info = userStorage.getUserById(id) ?: error("user info not found")
               val request = call.receive<SettingsRequest>()
-              val photoUrls = info.photoUrls.toMutableList()
-              if (request.set_photo != null) {
-                photoUrls.add(imageStorage.putImage(Base64.getDecoder().decode(request.set_photo)).toString())
+              val photoIds = info.photoIds.toMutableList()
+              photoIds.addAll(
+                request.new_photos.map {
+                  imageStorage.putImage(Base64.getDecoder().decode(it))
+                }
+              )
+              request.delete_photos.forEach {
+                imageStorage.deleteImage(it)
               }
-              if (request.delete_photo != null) {
-                imageStorage.deleteImage(request.delete_photo.replace(issuer + "api/get_image?id=", ""))
-                photoUrls.filter {url -> url != request.delete_photo}
-              }
+              photoIds.removeAll(request.delete_photos)
               var anecdote = info.anecdote
               if (request.anecdote != null)
                 anecdote = request.anecdote
               val newInfo = UserObject(info.username, request.display_name ?: info.displayName,
-                photoUrls, anecdote)
+                photoIds, anecdote)
               userStorage.updateUser(id, newInfo)
               call.respond(HttpStatusCode.OK)
             }
@@ -177,7 +176,7 @@ fun Application.configureRouting(isTestMode: Boolean) {
             call.respond(
               UserObject(
                 info.username, info.displayName,
-                info.photoUrls.map { url -> imageStorage.getLink(url) ?: ""}.filter { url -> url != "" },
+                info.photoIds,
                 info.anecdote
               )
             )
@@ -214,7 +213,7 @@ fun Application.configureRouting(isTestMode: Boolean) {
               signsMap[sign] = Pair(info.username, nextUser.username)
               call.respond(MatchResponse(UserObject(
                 nextUser.username, nextUser.displayName,
-                nextUser.photoUrls.map { url -> imageStorage.getLink(url) ?: ""}.filter { url -> url != "" },
+                nextUser.photoIds,
                 nextUser.anecdote
               ), sign))
             }

@@ -7,5 +7,5 @@ interface ImageStorage {
 
     fun getLink(path: String?): String?
 
-    fun deleteImage(path: String)
+    fun deleteImage(id: Int)
 }

@@ -43,9 +43,9 @@ class DBImageStorage(val connection: Database, private val handlerUrl: String = 
         return if (path != null) handlerUrl + path else null
     }
 
-    override fun deleteImage(path: String) {
+    override fun deleteImage(id: Int) {
         transaction(connection) {
-            ImagesTable.deleteWhere { ImagesTable.id eq path.toInt() }
+            ImagesTable.deleteWhere { ImagesTable.id eq id }
         }
     }
 }

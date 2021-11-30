@@ -30,7 +30,11 @@ class InMemoryImageStorage(private val handlerUrl: String = "") : ImageStorage {
         return if (path != null) handlerUrl + path else null
     }
 
-    override fun deleteImage(path: String) {
-        storage.remove(path)
+//    override fun deleteImage(id: Int) {
+//        storage.remove(id)
+//    }
+
+    override fun deleteImage(id: Int) {
+        TODO("Not yet implemented")
     }
 }

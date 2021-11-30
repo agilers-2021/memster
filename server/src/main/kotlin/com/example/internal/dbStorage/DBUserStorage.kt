@@ -4,8 +4,8 @@ import org.jetbrains.exposed.sql.*
 import com.example.UserStorage
 import com.example.models.UserObject
 import org.jetbrains.exposed.sql.transactions.transaction
-import java.lang.Integer.min
-import java.lang.Math.max
+import kotlin.math.max
+import kotlin.math.min
 
 class DBUserStorage(val connection: Database): UserStorage {
 
@@ -15,7 +15,7 @@ class DBUserStorage(val connection: Database): UserStorage {
     val id = integer("id").primaryKey().autoIncrement()
     val username = varchar("username", length=100)
     val displayName = varchar("display_name", length=100)
-    val photoUrls = varchar("photoUrl", length=100).nullable()
+    val photoIds = varchar("photoUrl", length=100).nullable()
     val anecdote = text("anecdote")
   }
 
@@ -54,11 +54,7 @@ class DBUserStorage(val connection: Database): UserStorage {
       UserTable.update({ UserTable.id eq id }) {
         it[username] = user.username
         it[displayName] = user.displayName
-        if (user.photoUrls.isEmpty()) {
-          it[photoUrls] = null
-        } else {
-          it[photoUrls] = user.photoUrls.joinToString(separator = " ")
-        }
+        it[photoIds] = user.photoIds.joinToString(separator = " ")
         it[anecdote] = user.anecdote
       }
       return@transaction true
@@ -70,11 +66,7 @@ class DBUserStorage(val connection: Database): UserStorage {
       UserTable.insert {
         it[UserTable.username] = username
         it[displayName] = user.displayName
-        if (user.photoUrls.isEmpty()) {
-          it[photoUrls] = null
-        } else {
-          it[photoUrls] = user.photoUrls.joinToString(separator = " ")
-        }
+        it[photoIds] = user.photoIds.joinToString(separator = " ")
         it[anecdote] = user.anecdote
       }
       return@transaction nextId - 1
@@ -85,7 +77,9 @@ class DBUserStorage(val connection: Database): UserStorage {
     return transaction(connection) {
       UserTable.select { UserTable.id eq id }.singleOrNull()?.let {
         return@transaction UserObject(
-          it[UserTable.username], it[UserTable.displayName], it[UserTable.photoUrls]?.split(" ") ?: run { emptyList() },
+          it[UserTable.username],
+          it[UserTable.displayName],
+          (it[UserTable.photoIds] ?: "").split(" ").map { id -> id.toInt() },
           it[UserTable.anecdote]
         )
       }
@@ -98,7 +92,9 @@ class DBUserStorage(val connection: Database): UserStorage {
       val allReactions = Reactions.select { Reactions.activeId eq id }.map { it[Reactions.passiveId] }.toList()
       UserTable.selectAll().firstOrNull { it[UserTable.id] != id && !allReactions.contains(it[UserTable.id]) }?.let {
         return@transaction UserObject(
-          it[UserTable.username], it[UserTable.displayName], it[UserTable.photoUrls]?.split(" ") ?: run { emptyList() },
+          it[UserTable.username],
+          it[UserTable.displayName],
+          (it[UserTable.photoIds] ?: "").split(" ").map { id -> id.toInt() },
           it[UserTable.anecdote]
         )
       }
