@@ -8,42 +8,57 @@ function editInit() {
         window.history.back();
     });
 
+    let fileToDataURL = function (file) {
+        let reader = new FileReader()
+        return new Promise(function (resolve) {
+            reader.onload = function (event) {
+                resolve(event.target.result)
+            }
+            reader.readAsDataURL(file)
+        })
+    }
+
     $form.addEventListener("submit", function (e) {
         e.preventDefault();
 
-        const reader = new FileReader();
-
         let display_name = document.getElementById("display_name").value;
         let anecdote = document.getElementById("anecdote").value;
-        let image = document.getElementById("img").files[0];
+        let images = Array.from(document.getElementById("img").files);
+        let delete_images = Array.from(document.getElementById("old_memes").children)
+            .filter(function (option) {
+                return !option.children[1].checked;
+            })
+            .map(function (option) {
+                return Number.parseInt(option.children[1].name);
+            })
+        console.log(delete_images);
+
+
         let form = e.target;
 
-        if (image)
-            reader.readAsDataURL(image)
-        let f = function () {
-            fetch(form.action, {
-                method: form.method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    display_name: display_name ? display_name : undefined,
-                    anecdote: anecdote ? anecdote : undefined,
-                    set_photo: reader.result ? reader.result.split(',')[1] : undefined
-                }),
-            }).then((_) => {
-                window.open("/user_info", "_self")
-            }).catch((error) => {
-                $isError.checked = true;
-                $errorText.innerText = error.message;
-            });
-        }
-        if (image === undefined) {
-            f()
-        } else {
-            reader.onloadend = f
-        }
+        Promise.all(images.map(fileToDataURL))
+            .then(function (imageUrls) {
+                fetch(form.action, {
+                    method: form.method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        display_name: display_name ? display_name : undefined,
+                        anecdote: anecdote ? anecdote : undefined,
+                        new_photos: imageUrls.map(function (url) {
+                            return url.split(',')[1]
+                        }),
+                        delete_photos: delete_images
+                    }),
+                }).then((_) => {
+                    window.open("/user_info", "_self")
+                }).catch((error) => {
+                    $isError.checked = true;
+                    $errorText.innerText = error.message;
+                });
+            })
     })
 
     fetch("/api/user_info", {
@@ -56,6 +71,27 @@ function editInit() {
         .then((data) => {
             document.getElementById("display_name").value = data["display_name"];
             document.getElementById("anecdote").value = data["anecdote"];
+            Array.from(data["photo_ids"]).forEach(function (id) {
+                let image = document.createElement("img");
+                image.className = "image-option";
+                image.src = `/api/get_image?id=${id}`;
+
+                let label = document.createElement("label");
+                label.htmlFor = `meme_${id}`;
+                label.appendChild(image);
+
+                let input = document.createElement("input");
+                input.type = "checkbox";
+                input.id = `meme_${id}`;
+                input.name = `${id}`;
+                input.checked = true;
+
+                let option = document.createElement("div");
+                option.appendChild(label);
+                option.appendChild(input);
+
+                document.getElementById("old_memes").appendChild(option);
+            })
         })
 }
 
@@ -206,8 +242,17 @@ function userInfoInit() {
             document.getElementById("display_name").innerText = data["display_name"];
             document.getElementById("username").innerText = data["username"];
             document.getElementById("anecdote").innerText = data["anecdote"];
-            if (data["photo_urls"] != null && data["photo_urls"].length > 0)
-                document.getElementById("profile_image").src = data["photo_urls"][0];
+            if (data["photo_ids"].length > 0) {
+                let $profileImages = document.getElementById("profile_images");
+                removeAllChildNodes($profileImages);
+
+                Array.from(data["photo_ids"]).forEach(function (id) {
+                    let image = document.createElement("img");
+                    image.className = "profile-picture";
+                    image.src = `/api/get_image?id=${id}`;
+                    $profileImages.appendChild(image);
+                })
+            }
         })
         .catch(() => {
             localStorage.removeItem("token");
@@ -237,8 +282,17 @@ function getNextMatch(token) {
             document.getElementById("display_name").innerText = user["display_name"];
             document.getElementById("username").innerText = user["username"];
             document.getElementById("anecdote").innerText = user["anecdote"];
-            if (user["photo_urls"] != null && user["photo_urls"].length > 0)
-                document.getElementById("profile_image").src = user["photo_urls"][0];
+            if (user["photo_ids"].length > 0) {
+                let $profileImages = document.getElementById("profile_images");
+                removeAllChildNodes($profileImages);
+
+                Array.from(user["photo_ids"]).forEach(function (id) {
+                    let image = document.createElement("img");
+                    image.className = "profile-picture";
+                    image.src = `/api/get_image?id=${id}`;
+                    $profileImages.appendChild(image);
+                })
+            }
             sessionStorage.setItem("nextMatchSign", data["sign"]);
         })
         .catch((_) => {

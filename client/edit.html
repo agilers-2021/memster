@@ -17,10 +17,12 @@
             <label class="unused-label" for="is_error"></label>
             <input class="error-flag" type="radio" id="is_error">
             <form class="input-form edit-form" id="edit_form" action="/api/settings" method="post">
-                <label class="edit-label" for="img">New meme</label>
-                <input type="file" id="img" name="img" accept="image/*">
                 <label class="edit-label" for="display_name">Display name</label>
                 <input class="input-field" type="text" id="display_name"/>
+                <div class="edit-label">Memes</div>
+                <div id="old_memes"></div>
+                <label class="edit-label" for="img">New memes</label>
+                <input type="file" multiple id="img" name="img" accept="image/*">
                 <label class="edit-label" for="anecdote">Anecdote</label>
                 <textarea class="input-field long-text-input" id="anecdote"></textarea>
                 <button class="input-form-button save-button" type="submit" id="edit_button">Save</button>
