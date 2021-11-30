@@ -79,7 +79,7 @@ class DBUserStorage(val connection: Database): UserStorage {
         return@transaction UserObject(
           it[UserTable.username],
           it[UserTable.displayName],
-          (it[UserTable.photoIds] ?: "").split(" ").map { id -> id.toInt() },
+          (it[UserTable.photoIds] ?: "").split(" ").mapNotNull { id -> id.toIntOrNull() },
           it[UserTable.anecdote]
         )
       }
@@ -94,7 +94,7 @@ class DBUserStorage(val connection: Database): UserStorage {
         return@transaction UserObject(
           it[UserTable.username],
           it[UserTable.displayName],
-          (it[UserTable.photoIds] ?: "").split(" ").map { id -> id.toInt() },
+          (it[UserTable.photoIds] ?: "").split(" ").mapNotNull { id -> id.toIntOrNull() },
           it[UserTable.anecdote]
         )
       }
