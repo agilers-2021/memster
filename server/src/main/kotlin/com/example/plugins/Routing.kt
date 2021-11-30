@@ -122,12 +122,12 @@ fun Application.configureRouting(isTestMode: Boolean) {
 
         route("get_image") {
           get {
-            val path = call.parameters["path"]
+            val path = call.parameters["id"]
             if (path == null) {
               call.respond(HttpStatusCode.BadRequest, "Wrong path")
               return@get
             }
-            val img = imageStorage.getImage(path)
+            val img = imageStorage.getImage(path.toInt())
             if (img == null) {
               call.respond(HttpStatusCode.BadRequest)
               return@get
@@ -155,10 +155,10 @@ fun Application.configureRouting(isTestMode: Boolean) {
               val request = call.receive<SettingsRequest>()
               val photoUrls = info.photoUrls.toMutableList()
               if (request.set_photo != null) {
-                photoUrls.add(imageStorage.putImage(info.username, Base64.getDecoder().decode(request.set_photo)))
+                photoUrls.add(imageStorage.putImage(Base64.getDecoder().decode(request.set_photo)).toString())
               }
               if (request.delete_photo != null) {
-                imageStorage.deleteImage(request.delete_photo.replace(issuer + "api/get_image?path=", ""))
+                imageStorage.deleteImage(request.delete_photo.replace(issuer + "api/get_image?id=", ""))
                 photoUrls.filter {url -> url != request.delete_photo}
               }
               var anecdote = info.anecdote

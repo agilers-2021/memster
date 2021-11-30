@@ -66,7 +66,7 @@ fun Application.module(isTestMode: Boolean = false) {
   DBMaster.messageStorage = messageStorage
 
 
-  val imagesStorage = DBImageStorage(DBMaster.connection, issuer + "api/get_image?path=")
+  val imagesStorage = DBImageStorage(DBMaster.connection, issuer + "api/get_image?id=")
   imagesStorage.init()
   DBMaster.imagesStorage = imagesStorage
 

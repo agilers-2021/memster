@@ -34,14 +34,16 @@ data class MatchResponse(val user: UserObject, val sign: String)
 @Serializable
 data class VoteRequest(val sign: String, val action: String)
 
+
+// I assume we pass the image in the format we do in settings, i.e. string. @Anton Paramonov
 @Serializable
 data class SendMessageRequest(
-  val receiver: String, val text: String
+  val receiver: String, val text: String, val image: String? = null
 )
 
 @Serializable
 data class ChatMessage(
-  val id: Int, val text: String, val datetime: String, val sender: Int, val receiver: Int
+  val id: Int, val text: String, val datetime: String, val sender: Int, val receiver: Int, val imageId: Int? = null
 )
 
 @Serializable

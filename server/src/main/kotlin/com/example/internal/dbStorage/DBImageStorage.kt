@@ -1,10 +1,7 @@
 package com.example.internal.dbStorage
 
 import com.example.ImageStorage
-import com.example.internal.dbStorage.DBUserStorage.UserTable.nullable
-import com.example.internal.dbStorage.DBUserStorage.UserTable.primaryKey
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class DBImageStorage(val connection: Database, private val handlerUrl: String = "") : ImageStorage{
@@ -12,7 +9,7 @@ class DBImageStorage(val connection: Database, private val handlerUrl: String = 
     private var nextId = 1
 
     object ImagesTable : Table() {
-        val path = integer("id").primaryKey()
+        val id = integer("id").primaryKey()
         val image = binary("image", 10000000)
     }
 
@@ -23,20 +20,20 @@ class DBImageStorage(val connection: Database, private val handlerUrl: String = 
         }
 
     }
-    override fun putImage(username: String, image: ByteArray): String {
+    override fun putImage(image: ByteArray): Int {
         return transaction(connection) {
             ImagesTable.insert {
-                it[path] = nextId
+                it[id] = nextId
                 nextId += 1
                 it[ImagesTable.image] = image
             }
-            (nextId - 1).toString()
+            nextId - 1
         }
     }
 
-    override fun getImage(path: String): ByteArray? {
+    override fun getImage(id: Int): ByteArray? {
         return transaction(connection) {
-            ImagesTable.select { ImagesTable.path eq path.toInt() }.singleOrNull()?.let {
+            ImagesTable.select { ImagesTable.id eq id }.singleOrNull()?.let {
                 it[ImagesTable.image]
             }
         }
@@ -48,7 +45,7 @@ class DBImageStorage(val connection: Database, private val handlerUrl: String = 
 
     override fun deleteImage(path: String) {
         transaction(connection) {
-            ImagesTable.deleteWhere { ImagesTable.path eq path.toInt() }
+            ImagesTable.deleteWhere { ImagesTable.id eq path.toInt() }
         }
     }
 }

@@ -6,6 +6,7 @@ import com.example.models.SendMessageRequest
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
+import java.util.*
 
 class DBMessageStorage(val connection: Database) : MessageStorage {
     var nextId = 0
@@ -15,6 +16,7 @@ class DBMessageStorage(val connection: Database) : MessageStorage {
         val datetime = datetime("datetime")
         val senderId = integer("senderId")
         val receiverId = integer("receiverId")
+        val imgId = integer("imageId").nullable()
     }
 
     fun init() {
@@ -40,7 +42,8 @@ class DBMessageStorage(val connection: Database) : MessageStorage {
                    it[MessageTable.text],
                    it[MessageTable.datetime].toString(),
                    it[MessageTable.senderId],
-                   it[MessageTable.receiverId]
+                   it[MessageTable.receiverId],
+                   it[MessageTable.imgId]
                )
            }
         }
@@ -48,6 +51,10 @@ class DBMessageStorage(val connection: Database) : MessageStorage {
 
     override fun sendMessage(senderId: Int, message: SendMessageRequest) {
         val receiverId = DBMaster.userStorage.getUserId(message.receiver)!!
+        var imgId: Int? = null
+        if (message.image != null) {
+            imgId = DBMaster.imagesStorage.putImage(Base64.getDecoder().decode(message.image))
+        }
         transaction(connection) {
             MessageTable.insert {
                 it[id] = nextId++
@@ -55,6 +62,7 @@ class DBMessageStorage(val connection: Database) : MessageStorage {
                 it[MessageTable.receiverId] = receiverId
                 it[text] = message.text
                 it[datetime] = DateTime(System.currentTimeMillis())
+                it[MessageTable.imgId] = imgId
             }
         }
     }
