@@ -14,7 +14,7 @@ interface MessageStorage {
 
   fun getMessagesForChat(chatId: ChatId): List<ChatMessage>?
 
-  fun sendMessage(senderId: Int, message: SendMessageRequest);
+  fun sendMessage(senderId: Int, message: SendMessageRequest)
 }
 
 typealias ChatId = Participants

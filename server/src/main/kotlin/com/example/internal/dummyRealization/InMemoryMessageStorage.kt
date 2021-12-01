@@ -8,7 +8,7 @@ import java.util.*
 class InMemoryMessageStorage(private val userStorage: UserStorage) : MessageStorage {
   private val storage = hashMapOf<Participants, MutableList<ChatMessage>>()
 
-  var nextId = 0;
+  var nextId = 0
 
   override fun getChatsById(id: Int): List<Int> {
     // FIXME?
@@ -33,7 +33,6 @@ class InMemoryMessageStorage(private val userStorage: UserStorage) : MessageStor
 
   override fun sendMessage(senderId: Int, message: SendMessageRequest) {
     val receiverId = userStorage.getUserId(message.receiver) ?: error("invalid receiver username")
-    val senderName = userStorage.getUserById(senderId)?.username ?: error("weird")
     val chatId = ChatId(senderId, receiverId)
     storage.putIfAbsent(chatId, mutableListOf())
     storage[chatId]?.add(
