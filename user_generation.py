@@ -3,6 +3,7 @@ import grequests
 import time
 import base64
 import names
+import random as r
 
 
 URL = 'http://0.0.0.0:8080/api/'
@@ -36,10 +37,11 @@ def add_info():
 		x = requests.post(URL + 'authenticate', json={'username': f'Petya{i}', 'password': '123456'})
 		token = x.json()['token']
 
-		picture = get_random_photo()
+		n = r.randint(1, 10)
+		pictures = [get_random_photo() for _ in range(n)]
 		anecdote = get_random_anecdote()
 
-		y = requests.post(URL + 'settings', headers={"Authorization": "Bearer " + token}, json={'new_photos': [picture], 'anecdote': anecdote})
+		y = requests.post(URL + 'settings', headers={"Authorization": "Bearer " + token}, json={'new_photos': pictures, 'anecdote': anecdote})
 
 
 def matches():
