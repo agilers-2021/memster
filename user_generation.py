@@ -8,12 +8,12 @@ import names
 URL = 'http://0.0.0.0:8080/api/'
 number_of_accounts = 10
 
+
 def get_random_photo():
 	picture_url = 'https://picsum.photos/200'
 	picture_req = requests.get(picture_url)
 	picture = base64.b64encode(picture_req.content)
 	return picture
-
 
 
 def get_random_anecdote():
@@ -41,5 +41,22 @@ def add_info():
 
 		y = requests.post(URL + 'settings', headers={"Authorization": "Bearer " + token}, json={'new_photos': [picture], 'anecdote': anecdote})
 
+
+def matches():
+	for i in range(number_of_accounts):
+		x = requests.post(URL + 'authenticate', json={'username': f'Petya{i}', 'password': '123456'})
+		token = x.json()['token']
+
+		match_req = requests.get(URL + 'match', headers={"Authorization": "Bearer " + token})
+
+		while match_req.status_code == 200:
+
+			sign = match_req.json()['sign']
+			vote_req = requests.post(URL + 'vote', headers={"Authorization": "Bearer " + token}, json={'sign': sign, 'action': 'match'})
+
+			match_req = requests.get(URL + 'match', headers={"Authorization": "Bearer " + token})
+
+
 create_accounts()
 add_info()
+matches()
