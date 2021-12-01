@@ -4,17 +4,20 @@ import base64
 import names
 import json
 import random
+import os
 
 
 URL = 'http://0.0.0.0:8080/api/'
 number_of_accounts = 10
+pictures_dir = os.getcwd() + '/server/src/main/resources/memes'
+pictures = os.listdir(pictures_dir)
 
 
 def get_random_photo():
-	picture_url = 'https://picsum.photos/200'
-	picture_req = requests.get(picture_url)
-	picture = base64.b64encode(picture_req.content).decode('utf-8')
-	return picture
+    path = random.choice(pictures)
+    with open(pictures_dir + '/' + path, "rb") as image_file:
+        encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
+        return encoded_string
 
 
 def get_random_anecdote():
