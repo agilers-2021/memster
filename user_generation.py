@@ -8,7 +8,7 @@ import os
 
 
 URL = 'http://0.0.0.0:8080/api/'
-number_of_accounts = 10
+number_of_accounts = 20
 pictures_dir = os.getcwd() + '/server/src/main/resources/memes'
 pictures = os.listdir(pictures_dir)
 
