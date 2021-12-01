@@ -17,6 +17,8 @@ class DBUserStorage(val connection: Database): UserStorage {
     val displayName = varchar("display_name", length=100)
     val photoIds = varchar("photoUrl", length=100).nullable()
     val anecdote = text("anecdote")
+    val likedBy = integer("liked_by").default(0)
+    val dislikedBy = integer("disliked_by").default(0)
   }
 
   object Reactions: Table() {
@@ -90,7 +92,9 @@ class DBUserStorage(val connection: Database): UserStorage {
   override fun getNextMatch(id: Int): UserObject? {
     return transaction(connection) {
       val allReactions = Reactions.select { Reactions.activeId eq id }.map { it[Reactions.passiveId] }.toList()
-      UserTable.selectAll().firstOrNull { it[UserTable.id] != id && !allReactions.contains(it[UserTable.id]) }?.let {
+      UserTable.selectAll()
+        .sortedByDescending { (it[UserTable.likedBy] + 1) / (it[UserTable.likedBy] + it[UserTable.dislikedBy] + 2) }
+        .firstOrNull { it[UserTable.id] != id && !allReactions.contains(it[UserTable.id]) }?.let {
         return@transaction UserObject(
           it[UserTable.username],
           it[UserTable.displayName],
@@ -118,6 +122,11 @@ class DBUserStorage(val connection: Database): UserStorage {
         it[passiveId] = user2
         it[isLike] = false
       }
+      UserTable.update({ UserTable.id eq user2 }) {
+        with (SqlExpressionBuilder) {
+          it.update(dislikedBy, dislikedBy + 1)
+        }
+      }
     }
   }
 
@@ -127,6 +136,11 @@ class DBUserStorage(val connection: Database): UserStorage {
         it[activeId] = user1
         it[passiveId] = user2
         it[isLike] = true
+      }
+      UserTable.update({ UserTable.id eq user2 }) {
+        with (SqlExpressionBuilder) {
+          it.update(likedBy, likedBy + 1)
+        }
       }
       Reactions.select {
         (Reactions.passiveId eq user1) and (Reactions.activeId eq user1) and
