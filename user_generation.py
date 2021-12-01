@@ -13,7 +13,7 @@ number_of_accounts = 10
 def get_random_photo():
 	picture_url = 'https://picsum.photos/200'
 	picture_req = requests.get(picture_url)
-	picture = base64.b64encode(picture_req.content)
+	picture = base64.b64encode(picture_req.content).decode('utf-8')
 	return picture
 
 
@@ -60,4 +60,4 @@ def matches():
 
 create_accounts()
 add_info()
-matches()
+# matches()
