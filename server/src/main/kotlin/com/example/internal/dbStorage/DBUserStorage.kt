@@ -42,6 +42,12 @@ class DBUserStorage(val connection: Database): UserStorage {
     }
   }
 
+  override fun getUserCount(): Int {
+    return transaction(connection) {
+        return@transaction UserTable.selectAll().count()
+    }
+  }
+
   override fun getUserId(username: String): Int? {
     return transaction(connection) {
       UserTable.select { UserTable.username eq username }.singleOrNull()?.let {

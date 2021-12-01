@@ -267,6 +267,17 @@ function feedInit() {
     }
 
     getNextMatch(token);
+    fetch("/api/user_count", {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    })
+        .then((data) => {
+            data.text().then((text) => {
+                document.getElementById("user-count-wrapper").innerText = `Пользователей зарегистрировано: ${text}`
+            })
+        })
 }
 
 function getNextMatch(token) {

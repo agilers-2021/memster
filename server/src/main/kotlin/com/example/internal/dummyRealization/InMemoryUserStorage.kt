@@ -12,6 +12,10 @@ class InMemoryUserStorage: UserStorage {
 
   private var nextId = 0
 
+  override fun getUserCount(): Int {
+    return usernameToId.size
+  }
+
   override fun getUserId(username: String): Int? {
     return usernameToId[username]
   }

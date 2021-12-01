@@ -182,6 +182,11 @@ fun Application.configureRouting(isTestMode: Boolean) {
             )
           }
 
+          get("user_count") {
+            val cnt = userStorage.getUserCount()
+            call.respondText { "$cnt" }
+          }
+
           get("chats") {
             val id = getUserId()
             val chats = messageStorage.getChatsById(id)
