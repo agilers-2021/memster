@@ -5,7 +5,7 @@ import com.example.CredentialsCheckResult
 import com.example.PasswordStorage
 import com.example.models.Credentials
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.mindrot.jbcrypt.BCrypt;
+import org.mindrot.jbcrypt.BCrypt
 
 
 class DBPasswordStorage(val connection: Database): PasswordStorage {

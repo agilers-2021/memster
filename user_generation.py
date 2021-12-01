@@ -1,8 +1,9 @@
 import requests
-import grequests
 import time
 import base64
 import names
+import json
+import random
 
 
 URL = 'http://0.0.0.0:8080/api/'
@@ -17,18 +18,18 @@ def get_random_photo():
 
 
 def get_random_anecdote():
-	return "Сидит Йети на горе"
-
+	f = open("aneks", "r")
+	aneks = json.loads(f.read())
+	f.close()
+	return random.choice(list(aneks.items()))[1]
 
 def create_accounts():
 
 	async_list = []
 
 	for i in range(number_of_accounts):
-		action_item = grequests.post(URL + 'register', json={'username': f'Petya{i}', 'password': '123456', 'display_name': names.get_first_name()})
+		action_item = requests.post(URL + 'register', json={'username': f'Petya{i}', 'password': '123456', 'display_name': names.get_first_name()})
 		async_list.append(action_item)
-
-	grequests.map(async_list)
 
 
 def add_info():
