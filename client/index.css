@@ -306,3 +306,10 @@ button {
 .chat-image {
     max-width: 100%;
 }
+
+.emoji-button {
+    font-size: xx-large;
+    margin: 3px 0;
+    border: none;
+    background-color: white;
+}

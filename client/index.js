@@ -375,6 +375,18 @@ function chatsInit() {
     let $message_input = document.getElementById("message_input");
     let $image_input = document.getElementById("image_input");
 
+    Array.from(document.getElementsByClassName("emoji-button")).forEach(function (value) {
+        value.addEventListener("click", function () {
+            let text = $message_input.value
+            let selectionStart = $message_input.selectionStart;
+            let selectionEnd = $message_input.selectionEnd;
+            let insertion = value.innerText;
+            $message_input.value = text.slice(0, selectionStart) + insertion + text.slice(selectionEnd);
+            $message_input.focus();
+            $message_input.selectionStart = $message_input.selectionEnd = selectionStart + insertion.length;
+        })
+    })
+
     $form.addEventListener("submit", async (e) => {
         e.preventDefault();
 
