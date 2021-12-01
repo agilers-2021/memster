@@ -349,6 +349,17 @@ function chatsInit() {
         updateChat(token)
     }, 500)
 
+    updateChat(token, function () {
+        setTimeout(
+            function() {
+                window.scrollTo({
+                    top: document.body.scrollHeight
+                });
+            },
+            50
+        )
+    });
+
     fetch("/api/chats", {
         method: 'GET',
         headers: {
@@ -414,7 +425,11 @@ function chatsInit() {
                 })
             })
                 .then((_) => {
-                    updateChat(token);
+                    updateChat(token, function () {
+                        window.scrollTo({
+                            top: document.body.scrollHeight
+                        });
+                    });
                 });
         }
 
@@ -428,7 +443,7 @@ function chatsInit() {
     });
 }
 
-function updateChat(token) {
+function updateChat(token, action) {
     let $messageList = document.getElementById("message_list");
 
     let username = sessionStorage.getItem("currentDialogue");
@@ -497,6 +512,10 @@ function updateChat(token) {
                     }
 
                     $messageList.appendChild(message);
+
+                    if (action !== undefined) {
+                        action();
+                    }
                 })
             })
     }
