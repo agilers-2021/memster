@@ -25,7 +25,7 @@ for i in range(1000):
 
 words_to_filter = None
 with open("words_to_filter") as f:  # Here we need to provide words_to_filter file
-    words_to_filter = set(f.readlines())
+    words_to_filter = set(map(lambda x: x[:-1], f.readlines()))
 
 for key in aneks.keys():
     anek = aneks[key]

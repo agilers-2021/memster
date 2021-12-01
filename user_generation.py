@@ -23,6 +23,7 @@ def get_random_anecdote():
 	f.close()
 	return random.choice(list(aneks.items()))[1]
 
+
 def create_accounts():
 
 	async_list = []
