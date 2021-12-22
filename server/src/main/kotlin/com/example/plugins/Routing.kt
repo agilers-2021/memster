@@ -3,6 +3,7 @@ package com.example.plugins
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.example.*
+import com.example.internal.dummyRealization.MicroserviceImagesStorage
 import com.example.models.*
 import io.ktor.application.*
 import io.ktor.auth.*
@@ -19,7 +20,8 @@ fun Application.configureRouting(isTestMode: Boolean) {
 
 //  val storage: UserStorage = InMemoryUserStorage()
 //  val imageStorage: ImageStorage = InMemoryImageStorage(issuer + "api/get_image?path=")
-  val imageStorage: ImageStorage = DBMaster.imagesStorage
+//  val imageStorage: ImageStorage = DBMaster.imagesStorage
+  val imageStorage = MicroserviceImagesStorage()
   val userStorage: UserStorage = DBMaster.userStorage
   val signsMap: HashMap<String, Pair<String, String>> = HashMap()
   val passwordStorage: PasswordStorage = DBMaster.passwordStorage
@@ -124,7 +126,8 @@ fun Application.configureRouting(isTestMode: Boolean) {
               call.respond(HttpStatusCode.BadRequest, "Wrong path")
               return@get
             }
-            val img = imageStorage.getImage(path.toInt())
+//            val img = imageStorage.getImage(path.toInt())
+            val img = imageStorage.getImage(path)
             if (img == null) {
               call.respond(HttpStatusCode.BadRequest)
               return@get
@@ -152,13 +155,15 @@ fun Application.configureRouting(isTestMode: Boolean) {
               val request = call.receive<SettingsRequest>()
               val photoIds = info.photoIds.toMutableList()
               photoIds.addAll(
-                request.new_photos.map {
-                  imageStorage.putImage(Base64.getDecoder().decode(it))
-                }
+//                request.new_photos.map {
+//                  imageStorage.putImage(Base64.getDecoder().decode(it))
+//                }
+              imageStorage.putImages(request.new_photos)
               )
-              request.delete_photos.forEach {
-                imageStorage.deleteImage(it)
-              }
+//              request.delete_photos.forEach {
+//                imageStorage.deleteImage(it)
+//              }
+              imageStorage.deleteImages(request.delete_photos)
               photoIds.removeAll(request.delete_photos)
               var anecdote = info.anecdote
               if (request.anecdote != null)

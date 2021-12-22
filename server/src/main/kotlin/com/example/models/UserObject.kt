@@ -56,3 +56,11 @@ data class ChatsResponse(
   val users: List<UserObject>
 )
 
+@Serializable
+data class ImagesPutRequest(val new_photos: List<String> = emptyList())
+@Serializable
+data class ImagesDeleteRequest(val delete_photos: List<Int> = emptyList())
+
+@Serializable
+data class ImagesResponse(val photos_ids: List<Int> = emptyList())
+

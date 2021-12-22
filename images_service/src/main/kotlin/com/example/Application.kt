@@ -1,12 +1,12 @@
 package com.example
 
-import io.ktor.server.engine.*
-import io.ktor.server.netty.*
+import com.example.internal.dbStorage.DBImageStorage
 import com.example.plugins.*
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.http.*
 import io.ktor.serialization.*
+import org.jetbrains.exposed.sql.Database
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
@@ -39,27 +39,24 @@ fun Application.module() {
         anyHost()
     }
     install(CallLogging)
-//    DBMaster.connection = Database.connect(
-//        environment.config.property("database.url").getString(),
-//        driver = environment.config.property("database.driver").getString(),
-//        user = environment.config.propertyOrNull("database.username")?.getString().orEmpty(),
-//        password = environment.config.propertyOrNull("database.password")?.getString().orEmpty()
-//    )
+    DBMaster.connection = Database.connect(
+        environment.config.property("database.url").getString(),
+        driver = environment.config.property("database.driver").getString(),
+        user = environment.config.propertyOrNull("database.username")?.getString().orEmpty(),
+        password = environment.config.propertyOrNull("database.password")?.getString().orEmpty()
+    )
 
-//    val imagesStorage = DBImageStorage(DBMaster.connection, issuer + "api/get_image?id=")
-//    imagesStorage.init()
-//    DBMaster.imagesStorage = imagesStorage
+    val imagesStorage = DBImageStorage(DBMaster.connection, issuer + "api/get_image?id=")
+    imagesStorage.init()
+    DBMaster.imagesStorage = imagesStorage
 
     configureSecurity()
     configureRouting()
 }
 
-//object DBMaster {
-//
-//    lateinit var connection: Database
-//    lateinit var passwordStorage: PasswordStorage
-//    lateinit var imagesStorage: ImageStorage
-//    lateinit var messageStorage: MessageStorage
-//    lateinit var userStorage: UserStorage
-//
-//}
+object DBMaster {
+
+    lateinit var connection: Database
+    lateinit var imagesStorage: ImageStorage
+
+}
